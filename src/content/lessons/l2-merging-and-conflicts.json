@@ -1,0 +1,75 @@
+{
+  "id": "l2-merging-and-conflicts",
+  "track": "branching-merging",
+  "order": 3,
+  "title": "Merging, and what a conflict really is",
+  "estimatedMinutes": 6,
+  "summary": "Merging brings a branch's commits into another branch. Usually Git does it alone. When two branches changed the same lines, Git stops and asks you to decide. That pause is a conflict, not an error.",
+  "sections": [
+    {
+      "heading": "Two shapes of merge",
+      "body": "`git merge feature` while on main asks Git to bring feature's commits into main.\n\n- If main has not moved since the branch was created, Git simply slides the main label forward to the branch's tip. No new commit. This is a **fast-forward**.\n- If both branches have new commits, Git creates a **merge commit** with two parents, combining the changes from both sides. The graph shows two lines joining."
+    },
+    {
+      "heading": "How Git combines changes",
+      "body": "Git finds the last commit both branches share (the merge base) and works out what each side changed since then. Changes to different files, or different parts of the same file, are combined automatically. You do nothing."
+    },
+    {
+      "heading": "Conflicts",
+      "body": "If both sides changed the **same lines**, Git cannot know which version you want. It stops, writes both versions into the file between markers, and lists the file as unmerged:\n\n`<<<<<<< HEAD` your side, `=======`, the other side, `>>>>>>> feature`.\n\nYou open the file, edit it into the version that is correct (often a mix of both), remove the markers, run `git add <file>` to say \"resolved\", then `git commit` to finish the merge. If you want out, `git merge --abort` returns everything to how it was before you started."
+    },
+    {
+      "heading": "Calm rules for conflicts",
+      "body": "- Read both sides before touching anything; understand what each person intended.\n- Keep both intentions when both are right. Do not silently drop a teammate's change.\n- Markers are plain text; a leftover `=======` will break the code.\n- When in doubt, ask the other author. Conflicts are a conversation, not a puzzle."
+    }
+  ],
+  "takeaways": [
+    "Fast-forward moves a label; a three-way merge creates a merge commit with two parents.",
+    "A conflict means both sides changed the same lines; Git waits for a human.",
+    "Edit, remove markers, git add, git commit. Or git merge --abort."
+  ],
+  "quiz": [
+    {
+      "question": "When does a fast-forward merge happen?",
+      "options": [
+        "Whenever two branches exist",
+        "When the branch being merged into has no new commits since the branch started",
+        "Only on Fridays"
+      ],
+      "answer": 1,
+      "explanation": "Nothing to combine, so the label just moves forward."
+    },
+    {
+      "question": "What does a conflict mean?",
+      "options": [
+        "Git is broken",
+        "Both branches changed the same lines and Git needs a human decision",
+        "The branch was deleted"
+      ],
+      "answer": 1,
+      "explanation": "Git stops rather than guess which version is right."
+    },
+    {
+      "question": "After editing a conflicted file, what tells Git it is resolved?",
+      "options": [
+        "Saving the file",
+        "git add on that file, then git commit",
+        "Closing the editor"
+      ],
+      "answer": 1,
+      "explanation": "add marks the file resolved; commit completes the merge."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Git Merge Conflicts Explained",
+      "url": "https://www.youtube.com/watch?v=WQXtpIDs9UQ",
+      "note": "What the markers mean and how to fix them, in about five minutes."
+    },
+    {
+      "title": "How to resolve merge conflicts in Git",
+      "url": "https://www.youtube.com/watch?v=xNVM5UxlFSA",
+      "note": "A second walkthrough with a real conflict."
+    }
+  ]
+}

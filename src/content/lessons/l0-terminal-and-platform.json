@@ -1,0 +1,75 @@
+{
+  "id": "l0-terminal-and-platform",
+  "track": "before-you-start",
+  "order": 6,
+  "title": "The terminal, and how this platform works",
+  "estimatedMinutes": 7,
+  "summary": "Git is used by typing commands. Here is the little you need to know about the terminal, plus how the lab workspace, objectives and hints behave.",
+  "sections": [
+    {
+      "heading": "What a terminal is",
+      "body": "A terminal is a text window where you type a command, press Enter, and read the answer. Nothing happens until you press Enter. The line that waits for you is the **prompt**; here it shows which folder you are in, like `~/my-notes$`.\n\nCommands are words separated by spaces. The first word is the program, the rest are instructions to it. `git status` runs the program `git` with the instruction `status`."
+    },
+    {
+      "heading": "Five commands for moving around",
+      "body": "- `ls` lists the files in the current folder. `ls -a` includes hidden ones that start with a dot.\n- `cd notes` moves into the folder `notes`. `cd ..` moves up one level.\n- `cat file.md` prints a file's contents.\n- `echo \"text\" >> file.md` adds a line to the end of a file. With one `>` it replaces the whole file.\n- `code file.md` opens the file in the editor pane.\n\nTab completes names. The up arrow brings back your previous command. Typing something wrong is harmless; the terminal just tells you."
+    },
+    {
+      "heading": "The three panes",
+      "body": "Every lab has the same layout:\n\n- **Left, Mission**: the brief, the objectives that tick themselves, and hints.\n- **Middle, Workbench**: an editor for files on top and the terminal below. A switch turns the terminal into buttons (UI mode) that show the equivalent command.\n- **Right, Repository**: the commit graph, updated after every command, plus a strip showing your files, the staging area and the latest commit.\n\nObjectives are checked by looking at the real repository, not at what you typed. Any correct way of reaching the state counts."
+    },
+    {
+      "heading": "You cannot break anything",
+      "body": "**Undo last step** in the toolbar takes the repository back one command. **Reset lab** starts the lab over from the beginning. Hints come in three levels: a nudge, an explanation, then the exact command. Use them freely; the course records hint use only so you can see where you leaned on help.\n\nWhen every objective is done, a debrief opens: what you did, what Git did underneath (with a replay of the graph), and the commands worth remembering."
+    }
+  ],
+  "takeaways": [
+    "A terminal runs one typed command at a time; the prompt shows your folder.",
+    "ls, cd, cat, echo and code cover almost everything the labs need.",
+    "Objectives check real repository state; Undo and Reset make experimenting safe."
+  ],
+  "quiz": [
+    {
+      "question": "What does `ls` do?",
+      "options": [
+        "Lists the files in the current folder",
+        "Loads a saved game",
+        "Deletes the current folder"
+      ],
+      "answer": 0,
+      "explanation": "ls = list. Add -a to see hidden files like .git and .gitignore."
+    },
+    {
+      "question": "How are lab objectives checked?",
+      "options": [
+        "By matching the exact commands you typed",
+        "By inspecting the real repository state",
+        "By a human reviewer"
+      ],
+      "answer": 1,
+      "explanation": "The platform looks at branches, commits, files and the staging area. Any correct approach passes."
+    },
+    {
+      "question": "You ran a command that made a mess. What now?",
+      "options": [
+        "Close the browser",
+        "Use Undo last step, or Reset lab to start over",
+        "Nothing can be done"
+      ],
+      "answer": 1,
+      "explanation": "Undo reverts one command; Reset reseeds the whole lab."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Command Line Crash Course For Beginners",
+      "url": "https://www.youtube.com/watch?v=uwAqEzhyjtw",
+      "note": "Navigation and file commands; skip the advanced chapters."
+    },
+    {
+      "title": "Linux Terminal Crash Course - For Absolute Beginners",
+      "url": "https://www.youtube.com/watch?v=hREnP0HslK8",
+      "note": "Another take, if the first one did not click."
+    }
+  ]
+}

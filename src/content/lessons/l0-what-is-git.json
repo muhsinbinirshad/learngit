@@ -1,0 +1,77 @@
+{
+  "id": "l0-what-is-git",
+  "track": "before-you-start",
+  "order": 1,
+  "title": "What Git is, and why it exists",
+  "estimatedMinutes": 6,
+  "summary": "Git keeps labelled copies of a folder over time, so you always know which version is latest, what changed, and who changed it, and you can go back to any earlier version.",
+  "sections": [
+    {
+      "heading": "The problem Git solves",
+      "body": "Picture a folder on your desktop: `essay_final.docx`, `essay_final_v2.docx`, `essay_final_REALLY_final.docx`. You keep copies because you are afraid of losing a good version, and a week later you cannot tell which one is the newest or what changed between them.\n\nNow imagine you email the essay to a friend for feedback. While they fix the spelling in their copy, you rewrite the introduction in yours. You now have two different files, and someone has to sit down, compare them line by line, and paste the good parts into one document by hand. If a third person joins, it gets worse.\n\nThat is the problem in miniature. Three questions keep coming up:\n\n- Which version is the latest one?\n- What exactly changed, and who changed it?\n- How do two people work on the same thing without overwriting each other?\n\nSoftware has the same problem, multiplied: a project is hundreds of files, edited by many people, every day, for years. **Version control** is the category of tools that answers those three questions. **Git** is the one almost every company uses."
+    },
+    {
+      "heading": "What a commit is",
+      "body": "Git watches one folder. That folder, together with the history Git keeps for it, is called a **repository**.\n\nA **commit** is a saved copy of the whole folder at one moment, with a label on it. Think of taking a photo of every file in the folder and writing on the back: who took it, when, and what had changed. Git keeps every one of those photos, in order, forever.\n\nWhen you make a commit, Git stores:\n\n- a copy of **every file** in the folder as it is right now, not only the one you were editing\n- **who** made it (your name and email)\n- **when** it was made\n- a short **message** you write to say what you did, for example \"Fix the spelling in the introduction\"\n\nGit never makes a commit on its own. You make one when you reach a point worth keeping: you finished a small piece of work, something now works, or you are about to try something risky.\n\nBack to the essay. Instead of `essay_final_v2.docx`, you keep one file and make a commit at each good point: \"Write the first draft\", then \"Fix spelling\", then \"Rewrite the introduction\". On disk there is one file; behind it, three saved copies with labels.\n\nThe list of commits, newest at the top, is the **history**. It answers the three questions from Part 01:\n\n- *Which version is the latest?* The top commit.\n- *What changed, and who changed it?* Pick any two commits and Git shows the exact lines that differ, with a name on each commit.\n- *Can I go back?* Yes. Any commit can be restored, at any time.\n\nNothing you have committed can be lost by accident. That safety net is why engineers can change things boldly."
+    },
+    {
+      "heading": "Git lives on your computer",
+      "body": "Git is a command-line program installed on your machine. The history is stored in a hidden folder named `.git` inside your project. No internet is needed to commit; sharing with other people is a separate step that uses a hosting service, which the next lessons cover.\n\nIn this course Git runs inside your browser, but it is the real thing: the same commands, the same history, the same rules."
+    },
+    {
+      "heading": "Words you will hear constantly",
+      "body": "- **Repository (repo)**: a folder with Git history.\n- **Commit**: one saved snapshot with a message.\n- **History / log**: the chain of commits.\n- **Branch**: a separate line of commits for work in progress (Track 2).\n- **Remote**: a copy of the repository on a server, used for sharing (Track 3)."
+    }
+  ],
+  "takeaways": [
+    "Git keeps a full history of a folder as a chain of commits.",
+    "A commit is a saved copy of the whole folder with a label: who, when and what changed.",
+    "Git works on your own computer; sharing is a separate step."
+  ],
+  "quiz": [
+    {
+      "question": "What does a commit record?",
+      "options": [
+        "Only the one file you just edited",
+        "A copy of every file in the folder at that moment, plus who, when and a message",
+        "A copy of the folder uploaded to the internet"
+      ],
+      "answer": 1,
+      "explanation": "A commit is a saved copy of the whole folder with a label: who, when and what changed."
+    },
+    {
+      "question": "Where does Git store a project's history?",
+      "options": [
+        "In a hidden .git folder inside the project",
+        "On GitHub's servers only",
+        "In your browser cache"
+      ],
+      "answer": 0,
+      "explanation": "The .git folder holds every commit. A hosting service only gets a copy when you choose to share."
+    },
+    {
+      "question": "Which of these does Git make possible?",
+      "options": [
+        "Seeing who changed a line and why",
+        "Making files load faster",
+        "Translating code between languages"
+      ],
+      "answer": 0,
+      "explanation": "History records authorship and messages, so questions like 'why is this here?' have an answer."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Git Explained in 100 Seconds",
+      "channel": "Fireship",
+      "url": "https://www.youtube.com/watch?v=hwP7WQkmECE",
+      "note": "The whole idea in under two minutes."
+    },
+    {
+      "title": "How Git Works: Explained in 4 Minutes",
+      "channel": "ByteByteGo",
+      "url": "https://www.youtube.com/watch?v=e9lnsKot_SQ",
+      "note": "Snapshots, commits and the three areas, drawn out."
+    }
+  ]
+}

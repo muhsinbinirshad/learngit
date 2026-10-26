@@ -1,0 +1,71 @@
+{
+  "id": "l1-good-messages",
+  "track": "foundations",
+  "order": 6,
+  "title": "What a commit message is for",
+  "estimatedMinutes": 4,
+  "summary": "A commit message is a note to a future reader: your teammate, the person fixing a bug at 2 a.m., or you in six months. There is a simple format that every team recognises.",
+  "sections": [
+    {
+      "heading": "Headline first",
+      "body": "The first line is a headline. Tools show it on its own everywhere: in the log, on pull requests, in release notes. Keep it short (aim for 50 characters, never more than 72), and write it as an instruction: `Add salt to pancake recipe`, not `added salt` or `Salt.`\n\nA quick test: the headline should complete the sentence \"If applied, this commit will ...\"."
+    },
+    {
+      "heading": "Blank line, then the why",
+      "body": "If the headline is not enough, leave one empty line and write a short paragraph. Do not repeat what the diff shows; explain what the reader cannot see: the reason, the trade-off, the ticket or incident it relates to.\n\nExample:\n\n`Raise oven to 220 degrees for a crisp crust`\n\n`At 180 the loaf came out pale and soft. 220 for the first 20 minutes gives the crust we wanted.`"
+    },
+    {
+      "heading": "One change per commit",
+      "body": "A message is easy to write when the commit does one thing. If you find yourself writing \"and\" in a headline, that is often two commits. The staging area (previous lesson) is how you split them."
+    }
+  ],
+  "takeaways": [
+    "Short imperative headline, under 72 characters, no full stop.",
+    "Blank line, then the reason, if the headline is not enough.",
+    "One change per commit makes messages easy."
+  ],
+  "quiz": [
+    {
+      "question": "Which headline follows the convention?",
+      "options": [
+        "fixed the thing.",
+        "Fix login timeout on slow networks",
+        "Changes"
+      ],
+      "answer": 1,
+      "explanation": "Imperative, specific, no trailing full stop."
+    },
+    {
+      "question": "What goes in the body of a message?",
+      "options": [
+        "A copy of the changed lines",
+        "The reason for the change",
+        "Your name"
+      ],
+      "answer": 1,
+      "explanation": "The diff already shows what; the body explains why. Git adds your name automatically."
+    },
+    {
+      "question": "Your headline reads 'Add salt and fix typo and update notes'. What should you do?",
+      "options": [
+        "Make it longer",
+        "Split the work into separate commits",
+        "Remove the word 'and'"
+      ],
+      "answer": 1,
+      "explanation": "Several unrelated changes belong in several commits."
+    }
+  ],
+  "videos": [
+    {
+      "title": "How to Write a Git Commit Messages Properly with Examples",
+      "url": "https://www.youtube.com/watch?v=Kz2iyskwLRA",
+      "note": "Good and bad examples side by side."
+    },
+    {
+      "title": "Write git commit messages like a PRO with Conventional Commits",
+      "url": "https://www.youtube.com/watch?v=OJqUWvmf4gg",
+      "note": "A stricter team convention you will meet later: feat:, fix:, docs:."
+    }
+  ]
+}

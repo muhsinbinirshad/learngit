@@ -1,0 +1,84 @@
+{
+  "id": "t1-choose-what-to-save",
+  "schemaVersion": 1,
+  "track": "foundations",
+  "order": 5,
+  "title": "Choose what goes into a commit",
+  "estimatedMinutes": 7,
+  "difficulty": "intro",
+  "skills": ["staging"],
+  "scenario": {
+    "company": "Your own project",
+    "role": "Beginner",
+    "brief": "**Where you are.** You edited two files this morning. `recipe.md` has a finished fix (a missing ingredient). `notes.md` has half-written thoughts you are not ready to save.\n\n**The idea.** The staging area lets you save one change without the other. You add only the file you want; the other stays edited on disk but out of the commit.\n\n**What you'll do.**\n\n1. Run `git status`. Both files show as modified.\n2. Run `git diff recipe.md` to see the fix, and `git diff notes.md` to see the half-done thoughts.\n3. Stage only the recipe: `git add recipe.md`.\n4. Commit: `git commit -m \"Add missing salt to pancake recipe\"`.\n5. Run `git status` again. notes.md is still modified and unsaved. That is exactly right.\n\n**Good to know.** Later you will learn `git add -p`, which lets you pick single lines from inside one file. For now, picking whole files is enough.",
+    "whyItMatters": "Teammates review commits one at a time. A commit that mixes a finished fix with half-done notes is hard to review and impossible to reuse. Choosing what goes in is a daily skill."
+  },
+  "workspace": { "projectDir": "my-notes" },
+  "seed": {
+    "steps": [
+      { "type": "commit", "author": "you", "message": "Add notes and recipe", "files": {
+        "notes.md": "# My notes\n\nThings I am learning about Git.\nGit saves snapshots, not just files.\n",
+        "recipe.md": "# Pancakes\n\n- 1 cup flour\n- 1 egg\n- 1 cup milk\n- 1 tbsp sugar\n"
+      } },
+      { "type": "file", "path": "recipe.md", "content": "# Pancakes\n\n- 1 cup flour\n- 1 egg\n- 1 cup milk\n- 1 tbsp sugar\n- a pinch of salt\n" },
+      { "type": "file", "path": "notes.md", "content": "# My notes\n\nThings I am learning about Git.\nGit saves snapshots, not just files.\nStaging is like... (still thinking about a good comparison)\n" }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "recipe-only",
+      "title": "Commit the recipe fix on its own",
+      "description": "The newest commit must change only recipe.md.",
+      "check": { "type": "all", "checks": [
+        { "type": "commitTouchesOnly", "ref": "HEAD", "paths": ["recipe.md"] },
+        { "type": "fileContains", "ref": "HEAD", "path": "recipe.md", "pattern": "pinch of salt" }
+      ] },
+      "hints": [
+        "Add only the file you want saved. Do not use `git add .` here; it would grab both.",
+        "`git add recipe.md` stages just that file. `git status` shows recipe.md in green and notes.md still in red.",
+        "Type: `git add recipe.md` then `git commit -m \"Add missing salt to pancake recipe\"`"
+      ]
+    },
+    {
+      "id": "notes-pending",
+      "title": "Leave the notes change unsaved",
+      "description": "notes.md should still show as modified after your commit.",
+      "check": { "type": "all", "checks": [
+        { "type": "fileContains", "ref": "HEAD", "path": "recipe.md", "pattern": "pinch of salt" },
+        { "type": "fileHasUnstagedChanges", "path": "notes.md" },
+        { "type": "fileNotContains", "ref": "HEAD", "path": "notes.md", "pattern": "still thinking" }
+      ] },
+      "hints": [
+        "Nothing to do if you only added recipe.md. Check with `git status`.",
+        "If you staged notes.md by accident, take it out of the box with `git restore --staged notes.md`. The edit stays in the file.",
+        "If you committed both files together, undo the commit but keep the edits: `git reset --soft HEAD~1`, then `git restore --staged notes.md`, then commit recipe.md alone."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You saved one change and deliberately left another unsaved. The staging area is what makes that possible.",
+    "internals": [
+      "Both files were modified on disk. `git add recipe.md` copied only the recipe into the staging area.",
+      "`git commit` built a snapshot from the staging area, so notes.md in that snapshot is still the old version.",
+      "Your edited notes.md still sits on disk, unstaged. Git knows it changed (status shows it) but has not saved it."
+    ],
+    "keyCommands": [
+      { "command": "git add <file>", "note": "Stage one file at a time." },
+      { "command": "git diff <file>", "note": "See the changes in just one file." },
+      { "command": "git restore --staged <file>", "note": "Take a file back out of the staging area." }
+    ],
+    "commonMistakes": [
+      "Using `git add .` or `git commit -a` out of habit and sweeping unfinished work into the commit.",
+      "Panicking after committing too much. `git reset --soft HEAD~1` undoes the commit and keeps your work."
+    ],
+    "atWork": "Reviewers love commits that do one thing. This habit is also what lets you cherry-pick a single fix onto a release later.",
+    "interview": "\"Why does Git have a staging area?\" Answer: so you can shape each commit, saving some changes now and others later."
+  },
+  "solution": [
+    "git status",
+    "git diff recipe.md",
+    "git add recipe.md",
+    "git commit -m \"Add missing salt to pancake recipe\"",
+    "git status"
+  ]
+}

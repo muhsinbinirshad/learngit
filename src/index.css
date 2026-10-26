@@ -1,0 +1,86 @@
+@import "./design-system/tokens.css";
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  code, pre, kbd, samp { font-family: var(--font-mono); }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+  ::selection { background: var(--color-primary-container); }
+  h1, h2, h3, h4 { margin: 0; font-weight: 500; }
+  p { margin: 0; }
+  a { color: var(--color-primary); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  /* Scrollbars: thin, calm */
+  * { scrollbar-width: thin; scrollbar-color: var(--color-outline) transparent; }
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20;
+  user-select: none;
+  flex-shrink: 0;
+}
+.material-symbols-outlined::before { content: attr(data-icon); }
+.material-symbols-outlined.icon-fill { font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 20; }
+
+/* Reusable motion utilities */
+.transition-standard {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-standard);
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes skeleton-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-fade-in { animation: fade-in var(--duration-base) var(--ease-standard) both; }
+.animate-rise-in { animation: rise-in var(--duration-slow) var(--ease-standard) both; }
+.animate-skeleton { animation: skeleton-pulse 1.6s ease-in-out infinite; }
+
+/* xterm overrides */
+.xterm { padding: 8px 12px; height: 100%; }
+.xterm .xterm-viewport { background-color: transparent !important; }
+
+/* Monaco container must own its size */
+.monaco-host { position: absolute; inset: 0; }
+
+/* Long-form reading (lessons). Measure ~66ch, 17px/1.6, em-based vertical rhythm. */
+.prose-lab.lesson-body { font-size: 16px; line-height: 1.6; max-width: 68ch; color: var(--color-on-surface); }
+.prose-lab.lesson-body > * + * { margin-top: 1.25em; }
+.prose-lab.lesson-body p + p { margin-top: 1.25em; }
+.prose-lab.lesson-body ul, .prose-lab.lesson-body ol { margin: 1em 0 0; padding-left: 1.4em; }
+.prose-lab.lesson-body li { padding-left: 0.2em; }
+.prose-lab.lesson-body li + li { margin-top: 0.45em; }
+.prose-lab.lesson-body li::marker { color: var(--color-on-surface-variant); }
+.prose-lab.lesson-body code { background: var(--color-surface-variant); padding: 0.1em 0.35em; margin: 0; border-radius: 4px; font-size: 0.85em; }
+.prose-lab.lesson-body strong { font-weight: 600; color: var(--color-on-surface); }
+
+/* Markdown-lite prose used in mission briefs and debriefs */
+.prose-lab p + p { margin-top: 8px; }
+.prose-lab code { background: var(--color-surface-variant); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+.prose-lab ul { margin: 8px 0 0; padding-left: 20px; list-style: disc; }
+.prose-lab li + li { margin-top: 4px; }
+.prose-lab strong { font-weight: 600; }

@@ -1,0 +1,81 @@
+{
+  "id": "l0-how-teams-work",
+  "track": "before-you-start",
+  "order": 3,
+  "title": "How software teams actually work",
+  "estimatedMinutes": 7,
+  "summary": "A shared repository, a protected main line, short-lived branches, and review before anything is merged. This is the daily rhythm you are training for.",
+  "sections": [
+    {
+      "heading": "One repository, many people",
+      "body": "A team shares one repository on a hosting service. Everyone has a full copy on their own computer. People work locally, then send their commits up to the shared copy and pull other people's commits down. Nobody edits files on the server directly."
+    },
+    {
+      "heading": "main is the truth",
+      "body": "One branch, usually called **main**, is the version that is considered correct and ready. In many companies, whatever is on main is what customers are using. Because of that, main is protected: you cannot simply push commits to it. Changes arrive through a review process."
+    },
+    {
+      "heading": "Branches for work in progress",
+      "body": "When you start a task, you create a **branch**: a separate line of commits that starts from main. You commit there as often as you like without affecting anyone. Branch names describe the task, like `feature/export-csv` or `fix/login-timeout`. When the work is done the branch is merged into main and deleted."
+    },
+    {
+      "heading": "Pull requests and code review",
+      "body": "To get a branch into main you open a **pull request** (some tools say merge request): a page showing every change, where teammates read the code, leave comments and ask for fixes. You push more commits to address them. When reviewers approve and the automatic checks are green, the branch is merged.\n\nReview is not a test you pass or fail. It is how teams share knowledge and catch mistakes early. Expect comments; everyone gets them."
+    },
+    {
+      "heading": "A day in the life",
+      "body": "1. Pull the latest main.\n2. Create a branch for your ticket.\n3. Make small commits with clear messages.\n4. Push the branch and open a pull request.\n5. Respond to review, push fixes.\n6. Merge. Delete the branch. Pick up the next ticket.\n\nEvery track in this course maps onto one of these steps."
+    }
+  ],
+  "takeaways": [
+    "Everyone works on a local copy and shares through a central repository.",
+    "main is protected; changes reach it through pull requests and review.",
+    "Branches are short-lived lines of work named after the task."
+  ],
+  "quiz": [
+    {
+      "question": "Why is the main branch usually protected?",
+      "options": [
+        "Because it is the version customers run, so changes must be reviewed first",
+        "Because only managers may use Git",
+        "Because Git cannot handle more than one branch"
+      ],
+      "answer": 0,
+      "explanation": "main represents the trusted state of the project, so teams require review and passing checks before anything lands there."
+    },
+    {
+      "question": "What is a pull request?",
+      "options": [
+        "A request to download the repository",
+        "A proposal to merge a branch, where teammates review the changes",
+        "A command that deletes a branch"
+      ],
+      "answer": 1,
+      "explanation": "A pull request shows the changes on a branch and hosts the review conversation before merging."
+    },
+    {
+      "question": "When do you create a branch?",
+      "options": [
+        "Once per year",
+        "When you start a task, so your work-in-progress does not affect main",
+        "Only when something breaks"
+      ],
+      "answer": 1,
+      "explanation": "Branches isolate work in progress. They are cheap and made constantly."
+    }
+  ],
+  "videos": [
+    {
+      "title": "GitHub Pull Request in 100 Seconds",
+      "channel": "Fireship",
+      "url": "https://www.youtube.com/watch?v=8lGpZkjnkt4",
+      "note": "Branch, push, open a pull request, merge."
+    },
+    {
+      "title": "Pull Requests, Code Review, and the GitHub Flow",
+      "channel": "GitHub Universe 2015",
+      "url": "https://www.youtube.com/watch?v=vCwuZfK0VG4",
+      "note": "A longer talk on how review-based workflows feel on a real team."
+    }
+  ]
+}

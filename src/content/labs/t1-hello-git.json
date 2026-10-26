@@ -1,0 +1,92 @@
+{
+  "id": "t1-hello-git",
+  "schemaVersion": 1,
+  "track": "foundations",
+  "order": 1,
+  "title": "Your first repository",
+  "estimatedMinutes": 6,
+  "difficulty": "intro",
+  "skills": ["commits"],
+  "scenario": {
+    "company": "Your own project",
+    "role": "Beginner",
+    "brief": "**Where you are.** You have a folder called `my-notes` with two small files in it: a notes file and a to-do list. Right now it is just a folder. If you break something, there is no way back.\n\n**What Git does.** Git keeps a history of a folder. Every time you tell it to save, it remembers exactly what every file looked like. Later you can look back, compare, or return to any saved point. A folder that Git watches is called a **repository** (repo for short).\n\n**What you'll do in this lab.**\n\n1. Tell Git your name and email. Every save you make is signed with them, so Git needs them once per computer. Use: `git config --global user.name \"Your Name\"` and `git config --global user.email you@example.com`\n2. Turn the folder into a repository with `git init`. You are already inside the folder.\n3. Ask Git how things look with `git status`. Read what it says; it tells you the files are \"untracked\", which means Git sees them but is not saving them yet. That is expected. Saving comes in the next lab.\n\n**Words you'll meet.** *Repository*: a folder with Git history. *Untracked*: a file Git has not been told to save yet.",
+    "whyItMatters": "Every project you will ever work on professionally lives in a repository, and every change is signed with a name. These two commands are the very first thing engineers run on a new machine."
+  },
+  "workspace": { "projectDir": "my-notes", "identity": null },
+  "seed": {
+    "steps": [
+      { "type": "file", "path": "notes.md", "content": "# My notes\n\nThings I am learning about Git.\n" },
+      { "type": "file", "path": "todo.md", "content": "# To do\n\n- Learn what a commit is\n- Save my first change\n" }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "identity",
+      "title": "Tell Git your name and email",
+      "description": "Use --global so it applies to every repository on this computer.",
+      "check": { "type": "all", "checks": [
+        { "type": "configSet", "key": "user.name", "scope": "global", "pattern": "\\S" },
+        { "type": "configSet", "key": "user.email", "scope": "global", "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$" }
+      ] },
+      "hints": [
+        "Git stores your identity in a settings file. The command is `git config`. You need to set two values: `user.name` and `user.email`.",
+        "Quotes keep a name with a space together. Email needs no quotes. The `--global` part means: for every repository on this machine.",
+        "Type these two lines, one at a time:\n`git config --global user.name \"Sam Okafor\"`\n`git config --global user.email sam@example.com`"
+      ]
+    },
+    {
+      "id": "init",
+      "title": "Turn the my-notes folder into a repository",
+      "check": { "type": "fileExists", "path": ".git/HEAD" },
+      "hints": [
+        "One command turns the current folder into a repository. You are already inside `~/my-notes` (the prompt shows it).",
+        "`git init` creates a hidden folder called `.git` where Git keeps the history. You never edit that folder by hand.",
+        "Type: `git init`"
+      ]
+    },
+    {
+      "id": "status",
+      "title": "Check the repository with git status",
+      "description": "Run it at least once. You should see notes.md and todo.md listed as untracked.",
+      "check": { "type": "all", "checks": [
+        { "type": "fileExists", "path": ".git/HEAD" },
+        { "type": "fileNotTracked", "path": "notes.md" },
+        { "type": "fileExists", "path": "notes.md" }
+      ] },
+      "sticky": true,
+      "hints": [
+        "`git status` is the command you will type most in your life. It never changes anything; it only reports.",
+        "Read the output: \"No commits yet\" means nothing is saved. \"Untracked files\" lists files Git is not watching yet.",
+        "Type: `git status`"
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You introduced yourself to Git, turned a plain folder into a repository, and learned to ask Git for a status report.",
+    "internals": [
+      "`git config --global` wrote your name and email into a small settings file in your home folder. Every save (commit) you make from now on carries that signature.",
+      "`git init` created a hidden `.git` folder inside `my-notes`. That folder is the whole history: empty for now.",
+      "`git status` compared the files in the folder with the history and reported that both files are untracked, meaning Git sees them but is not saving them yet."
+    ],
+    "keyCommands": [
+      { "command": "git config --global user.name \"Your Name\"", "note": "Once per computer. Use your real name." },
+      { "command": "git config --global user.email you@example.com", "note": "Once per computer." },
+      { "command": "git init", "note": "Start tracking the current folder." },
+      { "command": "git status", "note": "Ask Git what it sees. Safe to run any time." }
+    ],
+    "commonMistakes": [
+      "Running `git init` in the wrong folder, for example your whole home folder.",
+      "Forgetting the quotes around a name with a space.",
+      "Expecting `git init` to save the files. It only starts watching; saving is a separate step."
+    ],
+    "atWork": "On your first day at any company, you set your identity and clone or create a repository before anything else. You just did the first two steps.",
+    "interview": "\"What does git init do?\" Answer: it creates the hidden .git folder that stores the history. Nothing is saved until you commit."
+  },
+  "solution": [
+    "git config --global user.name \"Sam Okafor\"",
+    "git config --global user.email sam@example.com",
+    "git init",
+    "git status"
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "t1-change-and-commit",
+  "schemaVersion": 1,
+  "track": "foundations",
+  "order": 3,
+  "title": "Change a file, save it again",
+  "estimatedMinutes": 7,
+  "difficulty": "intro",
+  "skills": ["commits", "history"],
+  "scenario": {
+    "company": "Your own project",
+    "role": "Beginner",
+    "brief": "**Where you are.** `notes.md` is saved in history and `todo.md` is still untracked. Time to make the normal daily loop: change something, look at what changed, save.\n\n**What you'll do.**\n\n1. Save `todo.md` too: `git add todo.md`, then `git commit -m \"Add to-do list\"`.\n2. Open `notes.md` in the editor (click it in the file tree, or type `code notes.md`) and add a line of your own at the end. Save with Ctrl+S.\n3. Ask Git what changed: `git diff`. Lines starting with `+` are new.\n4. Save the change: `git add notes.md` then `git commit -m \"...\"` with a message that says what you added.\n5. Look at `git log --oneline`. You should see three commits, newest at the top.\n\n**Tip.** `git status` and `git diff` never change anything. Run them as often as you like.\n\n**Words you'll meet.** *Diff*: the list of lines that changed. *Working tree*: the files as they are on disk right now, saved or not.",
+    "whyItMatters": "Edit, check the diff, commit: this loop is most of an engineer's day. Reading a diff before committing is how you catch mistakes before anyone else sees them."
+  },
+  "workspace": { "projectDir": "my-notes" },
+  "seed": {
+    "steps": [
+      { "type": "commit", "author": "you", "message": "Add my notes file", "files": { "notes.md": "# My notes\n\nThings I am learning about Git.\n" } },
+      { "type": "file", "path": "todo.md", "content": "# To do\n\n- Learn what a commit is\n- Save my first change\n" }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "todo-commit",
+      "title": "Commit todo.md",
+      "check": { "type": "fileTracked", "path": "todo.md", "ref": "HEAD" },
+      "hints": [
+        "Same two steps as last time: add, then commit.",
+        "`git add todo.md` then `git commit -m \"Add to-do list\"`.",
+        "Type: `git add todo.md` and then `git commit -m \"Add to-do list\"`"
+      ]
+    },
+    {
+      "id": "edit",
+      "title": "Add a line to notes.md and commit the change",
+      "description": "notes.md in the latest commit must have more lines than before.",
+      "check": { "type": "all", "checks": [
+        { "type": "commitCount", "min": 3 },
+        { "type": "commitChangesPath", "ref": "HEAD", "path": "notes.md" },
+        { "type": "fileContains", "ref": "HEAD", "path": "notes.md", "pattern": "Things I am learning about Git\\.\\n[\\s\\S]*\\S" }
+      ] },
+      "hints": [
+        "Open the file in the editor (click notes.md on the left, or run `code notes.md`), type a new line at the end, press Ctrl+S.",
+        "After saving, `git diff` shows the new line with a `+`. Then add and commit as before.",
+        "Add a line like `Git saves snapshots, not just files.` Then: `git add notes.md` and `git commit -m \"Add a note about snapshots\"`"
+      ]
+    },
+    {
+      "id": "clean",
+      "title": "Finish with everything saved",
+      "description": "git status should say \"nothing to commit, working tree clean\".",
+      "check": { "type": "all", "checks": [
+        { "type": "commitCount", "min": 3 },
+        { "type": "workingTreeClean" }
+      ] },
+      "hints": [
+        "Clean means every file matches the latest commit and nothing is waiting in the staging area.",
+        "`git status` lists anything left. Add and commit it, or undo the edit.",
+        "If something is still listed: `git add .` then `git commit -m \"Save remaining changes\"`."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You ran the everyday loop twice: edit, check with diff and status, stage, commit. Your history now has three snapshots.",
+    "internals": [
+      "Each commit points to the one before it. That chain is the history `git log` shows, newest first.",
+      "`git diff` compared the file on disk with the version Git has staged and printed only the lines that differ.",
+      "After the final commit the working tree, the staging area and the latest commit all matched, which is what \"clean\" means."
+    ],
+    "keyCommands": [
+      { "command": "git diff", "note": "What changed and is not staged yet." },
+      { "command": "git log --oneline", "note": "One line per commit: short id and message." },
+      { "command": "git add . ", "note": "Stage every changed file in the folder. Convenient, but look at `git status` first." }
+    ],
+    "commonMistakes": [
+      "Editing a file and forgetting to save it in the editor, so `git diff` shows nothing.",
+      "Running `git diff` after `git add` and seeing nothing: once staged, use `git diff --staged`.",
+      "Writing messages that describe the file instead of the change (\"notes.md\" instead of \"Add a note about snapshots\")."
+    ],
+    "atWork": "Small, frequent commits make it easy for teammates to review your work and for you to undo a single step later.",
+    "interview": "\"What is the difference between git diff and git diff --staged?\" Answer: unstaged changes versus changes already staged for the next commit."
+  },
+  "solution": [
+    "git add todo.md",
+    "git commit -m \"Add to-do list\"",
+    "echo \"Git saves snapshots, not just files.\" >> notes.md",
+    "git diff",
+    "git add notes.md",
+    "git commit -m \"Add a note about snapshots\"",
+    "git log --oneline"
+  ]
+}

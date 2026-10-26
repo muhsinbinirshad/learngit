@@ -1,0 +1,71 @@
+{
+  "id": "l2-branches",
+  "track": "branching-merging",
+  "order": 1,
+  "title": "Branches explained",
+  "estimatedMinutes": 5,
+  "summary": "A branch is a movable label on a commit. Creating one is instant, switching between them changes the files in your folder, and committing moves the label you are standing on.",
+  "sections": [
+    {
+      "heading": "A branch is a label",
+      "body": "Inside the `.git` folder, a branch is a tiny file holding the id of one commit. `main` is a label. `feature/csv-export` is a label. That is why creating a branch takes no time and no space: Git writes one short file.\n\n**HEAD** is Git's note of which label you are currently standing on. When you commit, the label HEAD points at moves forward to the new commit. Other labels stay where they were."
+    },
+    {
+      "heading": "Switching branches",
+      "body": "`git switch <branch>` moves HEAD to another label and rewrites the files in your folder to match that branch's latest commit. Your folder literally changes. Files that exist only on the other branch appear; files that do not exist there disappear (they are safe in history).\n\nGit refuses to switch if you have unsaved edits that would be overwritten. That is a safety feature; commit or stash first (stash is at the end of this track)."
+    },
+    {
+      "heading": "Why teams branch",
+      "body": "Work in progress must not affect main, because main may deploy to customers. So every task gets a branch: `git switch -c feature/short-name` creates it from where you are and switches to it. Commit there as often as you like. When the work is reviewed, the branch is merged back into main and deleted.\n\nThe Repository pane draws each branch as a labelled node on the graph, so you can watch labels move as you commit."
+    }
+  ],
+  "takeaways": [
+    "A branch is a label pointing at a commit; HEAD marks the label you are on.",
+    "Committing moves the current label; switching rewrites your files to another label's commit.",
+    "Create a branch per task so main stays safe."
+  ],
+  "quiz": [
+    {
+      "question": "What physically is a branch in Git?",
+      "options": [
+        "A full copy of the project",
+        "A small file holding one commit id",
+        "A folder of patches"
+      ],
+      "answer": 1,
+      "explanation": "That is why creating branches is instant."
+    },
+    {
+      "question": "You commit while on branch feature/x. What moves?",
+      "options": [
+        "main",
+        "feature/x (the branch HEAD points at)",
+        "Every branch"
+      ],
+      "answer": 1,
+      "explanation": "Only the current branch label advances."
+    },
+    {
+      "question": "What does `git switch -c feature/login` do?",
+      "options": [
+        "Creates the branch and switches to it",
+        "Deletes the branch",
+        "Merges it into main"
+      ],
+      "answer": 0,
+      "explanation": "-c means create. It starts from the commit you are on."
+    }
+  ],
+  "videos": [
+    {
+      "title": "How Git Actually Works: Pointers, Commits, and Branch Diagrams",
+      "url": "https://www.youtube.com/watch?v=0VROde_vh6U",
+      "note": "Why a branch is just a pointer."
+    },
+    {
+      "title": "Git & GitHub Tutorial for Beginners #9 - Merging Branches (& conflicts)",
+      "url": "https://www.youtube.com/watch?v=XX-Kct0PfFc",
+      "note": "Creating and merging branches step by step."
+    }
+  ]
+}

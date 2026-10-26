@@ -1,0 +1,265 @@
+{
+  "id": "t2-merge-shapes",
+  "schemaVersion": 1,
+  "track": "branching-merging",
+  "order": 2,
+  "title": "Two merges, two shapes",
+  "estimatedMinutes": 10,
+  "difficulty": "core",
+  "skills": [
+    "merging",
+    "history"
+  ],
+  "scenario": {
+    "company": "Harbor Analytics",
+    "role": "Full-stack Engineer, Insights team",
+    "brief": "Two branches in `insights-app` passed review this morning and you are the release captain for today.\n\n`feature/search` was started from the current `main` and `main` has not moved since, so its two commits can slide straight onto `main`. `feature/metrics` was branched earlier; since then Tomasz landed a dependency bump on `main`, so the two lines of history have diverged.\n\nMerge them in this order, watching the graph on the right as you go:\n\n1. Merge `feature/search` into `main`. Expect a **fast-forward**: no new commit, `main` simply moves.\n2. Merge `feature/metrics` into `main`. Expect a **three-way merge**: Git creates a merge commit with two parents.\n\nThe two features touch different files, so there is nothing to resolve by hand. Finish on `main` with a clean working tree.",
+    "whyItMatters": "Knowing which shape a merge will produce before you run it is a mark of fluency. Fast-forwards keep history linear; merge commits record that two lines of work were integrated. Teams pick conventions (`--no-ff`, squash) based on exactly this distinction."
+  },
+  "workspace": {
+    "projectDir": "insights-app"
+  },
+  "cast": {
+    "ines": {
+      "name": "Inés Castillo",
+      "email": "ines.castillo@harboranalytics.io",
+      "role": "Engineering Manager"
+    },
+    "tomasz": {
+      "name": "Tomasz Nowak",
+      "email": "tomasz.nowak@harboranalytics.io",
+      "role": "Senior Engineer"
+    },
+    "aiko": {
+      "name": "Aiko Tanaka",
+      "email": "aiko.tanaka@harboranalytics.io",
+      "role": "Engineer"
+    }
+  },
+  "seed": {
+    "startDate": "2026-03-16T09:00:00Z",
+    "stepMinutes": 95,
+    "steps": [
+      {
+        "type": "commit",
+        "author": "ines",
+        "message": "Create insights app skeleton",
+        "files": {
+          "README.md": "# Insights App\n\nDashboards for Harbor Analytics customers.\n",
+          "package.json": "{\n  \"name\": \"insights-app\",\n  \"version\": \"2.2.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"chart-kit\": \"3.1.0\"\n  }\n}\n",
+          "src/index.js": "const { summarize } = require('./summarize')\n\nmodule.exports = { summarize }\n",
+          "src/summarize.js": "function summarize(rows, key) {\n  return rows.reduce((sum, row) => sum + Number(row[key] || 0), 0)\n}\n\nmodule.exports = { summarize }\n"
+        }
+      },
+      {
+        "type": "commit",
+        "author": "tomasz",
+        "message": "Add CSV export module",
+        "label": "base",
+        "files": {
+          "src/export/csv.js": "function toCsv(rows) {\n  const keys = Object.keys(rows[0] || {})\n  return [keys.join(','), ...rows.map((r) => keys.map((k) => r[k]).join(','))].join('\\n')\n}\n\nmodule.exports = { toCsv }\n"
+        }
+      },
+      {
+        "type": "branch",
+        "name": "feature/metrics",
+        "from": "main"
+      },
+      {
+        "type": "checkout",
+        "ref": "feature/metrics"
+      },
+      {
+        "type": "commit",
+        "author": "aiko",
+        "message": "Add metrics collector for dashboard loads",
+        "files": {
+          "src/metrics.js": "const counters = new Map()\n\nfunction increment(name) {\n  counters.set(name, (counters.get(name) || 0) + 1)\n}\n\nfunction snapshot() {\n  return Object.fromEntries(counters)\n}\n\nmodule.exports = { increment, snapshot }\n"
+        }
+      },
+      {
+        "type": "commit",
+        "author": "aiko",
+        "message": "Record dashboard load metric",
+        "files": {
+          "src/dashboard.js": "const { increment } = require('./metrics')\n\nfunction loadDashboard(id) {\n  increment('dashboard.load')\n  return { id, widgets: [] }\n}\n\nmodule.exports = { loadDashboard }\n"
+        }
+      },
+      {
+        "type": "checkout",
+        "ref": "main"
+      },
+      {
+        "type": "commit",
+        "author": "tomasz",
+        "message": "Bump chart-kit to 3.2.1 for the tooltip fix",
+        "label": "main-tip",
+        "files": {
+          "package.json": "{\n  \"name\": \"insights-app\",\n  \"version\": \"2.2.0\",\n  \"private\": true,\n  \"dependencies\": {\n    \"chart-kit\": \"3.2.1\"\n  }\n}\n"
+        }
+      },
+      {
+        "type": "branch",
+        "name": "feature/search",
+        "from": "main"
+      },
+      {
+        "type": "checkout",
+        "ref": "feature/search"
+      },
+      {
+        "type": "commit",
+        "author": "ines",
+        "message": "Add search index over dashboard titles",
+        "files": {
+          "src/search.js": "function buildIndex(dashboards) {\n  return dashboards.map((d) => ({ id: d.id, text: d.title.toLowerCase() }))\n}\n\nfunction search(index, query) {\n  const q = query.toLowerCase()\n  return index.filter((e) => e.text.includes(q)).map((e) => e.id)\n}\n\nmodule.exports = { buildIndex, search }\n"
+        }
+      },
+      {
+        "type": "commit",
+        "author": "ines",
+        "message": "Export search helpers",
+        "label": "search-tip",
+        "files": {
+          "src/index.js": "const { summarize } = require('./summarize')\nconst { buildIndex, search } = require('./search')\n\nmodule.exports = { summarize, buildIndex, search }\n"
+        }
+      },
+      {
+        "type": "checkout",
+        "ref": "main"
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "ff-merge",
+      "title": "Merge feature/search into main as a fast-forward",
+      "description": "main should move to the search commits without creating a merge commit.",
+      "check": {
+        "type": "all",
+        "checks": [
+          {
+            "type": "headOnBranch",
+            "name": "main"
+          },
+          {
+            "type": "refContains",
+            "ref": "main",
+            "target": "label:search-tip"
+          },
+          {
+            "type": "not",
+            "check": {
+              "type": "mergeCommitWithParent",
+              "ref": "main",
+              "parent": "label:search-tip",
+              "position": "nonFirst"
+            }
+          }
+        ]
+      },
+      "hints": [
+        "You merge into the branch you are on. Check `git branch` first. A fast-forward happens when the current branch is an ancestor of the branch being merged.",
+        "`git merge feature/search` while on main. The output will say \"Fast-forward\" and the graph stays a straight line.",
+        "Run `git switch main` (if needed) then `git merge feature/search`"
+      ]
+    },
+    {
+      "id": "three-way",
+      "title": "Merge feature/metrics into main with a merge commit",
+      "check": {
+        "type": "all",
+        "checks": [
+          {
+            "type": "refContains",
+            "ref": "main",
+            "target": "feature/metrics"
+          },
+          {
+            "type": "mergeCommitWithParent",
+            "ref": "main",
+            "parent": "feature/metrics"
+          },
+          {
+            "type": "refContains",
+            "ref": "main",
+            "target": "label:search-tip"
+          }
+        ]
+      },
+      "hints": [
+        "main and feature/metrics have both moved since they split, so Git needs a commit that has both as parents.",
+        "`git merge feature/metrics` finds the common ancestor, combines both sides and, with no conflicts, commits automatically with a default message.",
+        "Run `git merge feature/metrics`. Then `git log --oneline --graph` shows the merge commit with two parent lines."
+      ]
+    },
+    {
+      "id": "clean",
+      "title": "End on main with a clean working tree and no merge in progress",
+      "check": {
+        "type": "all",
+        "checks": [
+          {
+            "type": "headOnBranch",
+            "name": "main"
+          },
+          {
+            "type": "refContains",
+            "ref": "main",
+            "target": "feature/metrics"
+          },
+          {
+            "type": "workingTreeClean"
+          },
+          {
+            "type": "noOperationInProgress"
+          }
+        ]
+      },
+      "hints": [
+        "Both merges complete on their own because the branches changed different files.",
+        "`git status` should say nothing to commit. If it mentions a merge in progress, finish it with `git commit` or back out with `git merge --abort`.",
+        "Verify with `git status` and `git log --oneline --graph --all`."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You performed both kinds of merge and saw how the starting shape of the history decides whether Git moves a pointer or creates a new commit.",
+    "internals": [
+      "For feature/search, Git found that main's commit was an ancestor of the search tip. Nothing needed combining, so it moved the ref `main` forward and updated the index and working tree. No commit was created.",
+      "For feature/metrics, Git computed the merge base (the last commit both sides share), diffed each side against it, and combined the two diffs. Since they touched different files, the result was automatic.",
+      "The merge commit stores two parents: the previous main tip first, then the metrics tip. `git log --graph` draws the second parent as a line joining from the side.",
+      "Both branches still exist and point where they did; merging never moves the branch being merged in."
+    ],
+    "keyCommands": [
+      {
+        "command": "git merge <branch>",
+        "note": "Integrate <branch> into the current branch."
+      },
+      {
+        "command": "git merge --no-ff <branch>",
+        "note": "Force a merge commit even when a fast-forward is possible; some teams require this for traceability."
+      },
+      {
+        "command": "git log --oneline --graph --all",
+        "note": "The shape of history, including merge commits."
+      },
+      {
+        "command": "git branch -d <branch>",
+        "note": "Delete a branch whose commits are already merged."
+      }
+    ],
+    "commonMistakes": [
+      "Merging while on the wrong branch (for example merging main into feature/search).",
+      "Expecting a merge commit after a fast-forward and thinking something went wrong.",
+      "Being surprised that the merged branch still exists. Merging copies nothing and deletes nothing; it only moves the current branch."
+    ],
+    "atWork": "Hosted platforms offer \"merge\", \"squash\" and \"rebase\" buttons that map exactly onto these shapes. Knowing what each produces lets you read any team's history and choose the right option for a pull request.",
+    "interview": "\"Explain fast-forward versus three-way merge\" is a staple. Mention the ancestor check and the merge base, and that a fast-forward creates no commit."
+  },
+  "solution": [
+    "git merge feature/search",
+    "git merge feature/metrics",
+    "git log --oneline --graph --all"
+  ]
+}

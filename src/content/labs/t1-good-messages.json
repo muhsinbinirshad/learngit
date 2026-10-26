@@ -1,0 +1,88 @@
+{
+  "id": "t1-good-messages",
+  "schemaVersion": 1,
+  "track": "foundations",
+  "order": 7,
+  "title": "Write a commit message people can use",
+  "estimatedMinutes": 7,
+  "difficulty": "intro",
+  "skills": ["commits"],
+  "scenario": {
+    "company": "Your own project",
+    "role": "Beginner",
+    "brief": "**Where you are.** Your friend Priya looked at your history and said the last message, `stuff`, tells her nothing. She is right. You will fix it, then write a proper message for a new change.\n\n**The rules teams use.** A good message has a short first line, like a headline, written as an instruction: \"Add salt to recipe\", not \"added salt\" or \"salt.\" Keep it under 50 characters if you can, never over 72, and do not end it with a full stop. If you need to explain *why*, leave one empty line and write a sentence or two after it.\n\n**What you'll do.**\n\n1. Look at the bad message: `git log --oneline`.\n2. Replace the latest message without changing the files: `git commit --amend -m \"Add cooking time to pancake recipe\"`. Amend means \"rewrite the latest commit\".\n3. Make a new change: open `recipe.md`, add a line `Serves: 2`, save.\n4. Commit it with a headline **and** a body. Type `git commit -am \"Add serving size to recipe\" -m \"Priya asked how many people the recipe feeds.\"` The first `-m` is the headline, the second becomes the body after a blank line.\n5. Check with `git log`. Two tidy messages at the top.",
+    "whyItMatters": "Six months from now, a message is often the only explanation of why a line exists. Teams reject pull requests with messages like \"fix\" or \"stuff\"."
+  },
+  "workspace": { "projectDir": "my-notes" },
+  "seed": {
+    "steps": [
+      { "type": "commit", "author": "you", "message": "Add notes and recipe", "files": {
+        "notes.md": "# My notes\n\nThings I am learning about Git.\nGit saves snapshots, not just files.\n",
+        "recipe.md": "# Pancakes\n\n- 1 cup flour\n- 1 egg\n- 1 cup milk\n- 1 tbsp sugar\n- a pinch of salt\n"
+      } },
+      { "type": "commit", "author": "you", "message": "stuff", "label": "bad", "files": {
+        "recipe.md": "# Pancakes\n\nCooking time: 15 minutes\n\n- 1 cup flour\n- 1 egg\n- 1 cup milk\n- 1 tbsp sugar\n- a pinch of salt\n"
+      } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "amend",
+      "title": "Replace the message \"stuff\" with a clear headline",
+      "description": "Same files, better message, under 72 characters, no full stop at the end.",
+      "check": { "type": "all", "checks": [
+        { "type": "not", "check": { "type": "commitMessageMatches", "ref": "HEAD", "pattern": "^stuff", "which": "any" } },
+        { "type": "fileContains", "ref": "HEAD", "path": "recipe.md", "pattern": "Cooking time" },
+        { "type": "commitMessageFormat", "which": "all", "maxSubject": 72, "noTrailingPeriod": true, "requireBlankLine": true }
+      ] },
+      "hints": [
+        "You can rewrite the most recent commit's message. Nobody else has this history, so it is safe.",
+        "`git commit --amend -m \"New message\"` replaces the latest commit with the same files and a new message.",
+        "Type: `git commit --amend -m \"Add cooking time to pancake recipe\"`"
+      ]
+    },
+    {
+      "id": "body",
+      "title": "Commit a new change with a headline and a body",
+      "description": "Add `Serves: 2` to recipe.md, then commit with a first line and an explanation after a blank line.",
+      "check": { "type": "all", "checks": [
+        { "type": "fileContains", "ref": "HEAD", "path": "recipe.md", "pattern": "Serves: 2" },
+        { "type": "commitMessageFormat", "ref": "HEAD", "maxSubject": 72, "noTrailingPeriod": true, "requireBlankLine": true },
+        { "type": "commitMessageMatches", "ref": "HEAD", "pattern": "^[^\\n]+\\n\\n\\S" },
+        { "type": "workingTreeClean" }
+      ] },
+      "hints": [
+        "Edit recipe.md (click it, or `code recipe.md`), add a line `Serves: 2`, save with Ctrl+S.",
+        "Two `-m` flags make a headline and a body: the first is the first line, the second goes after a blank line. `-a` stages every tracked file that changed.",
+        "Type: `git commit -am \"Add serving size to recipe\" -m \"Priya asked how many people the recipe feeds.\"`"
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You repaired a useless message and wrote one with a headline and a reason. Your history now reads like a story.",
+    "internals": [
+      "`--amend` did not edit the old commit; it created a new one with the same files and a new message and moved the branch to it. The old one is simply no longer in the chain.",
+      "A commit message is stored as plain text. The first line is the subject; tools like `git log --oneline` show only that line, which is why it must stand alone.",
+      "The blank line separates subject from body so Git and every tool can tell them apart."
+    ],
+    "keyCommands": [
+      { "command": "git commit --amend -m \"...\"", "note": "Rewrite the latest commit's message. Only for commits you have not shared yet." },
+      { "command": "git commit -m \"Subject\" -m \"Body\"", "note": "Headline plus explanation." },
+      { "command": "git commit -am \"...\"", "note": "Stage every tracked change and commit in one go. Does not add new files." }
+    ],
+    "commonMistakes": [
+      "Amending a commit that teammates already have. That rewrites shared history and causes confusion; later tracks cover the rule.",
+      "Messages in past tense or with a full stop: \"Added salt.\" Write \"Add salt\".",
+      "Explaining *what* in the body when the diff already shows it. The body is for *why*."
+    ],
+    "atWork": "Many teams enforce these rules automatically and refuse commits that break them. Good messages make code review, changelogs and bug hunting faster for everyone.",
+    "interview": "\"What makes a good commit message?\" Answer: a short imperative subject, a blank line, and a body that explains why."
+  },
+  "solution": [
+    "git log --oneline",
+    "git commit --amend -m \"Add cooking time to pancake recipe\"",
+    "echo \"Serves: 2\" >> recipe.md",
+    "git commit -am \"Add serving size to recipe\" -m \"Priya asked how many people the recipe feeds.\"",
+    "git log"
+  ]
+}

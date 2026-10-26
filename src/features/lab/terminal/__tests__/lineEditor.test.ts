@@ -1,0 +1,50 @@
+import { describe, it, expect } from 'vitest'
+import { LineEditor } from '../lineEditor'
+import { commonPrefix } from '../completion'
+
+describe('LineEditor', () => {
+  it('edits, moves the cursor and submits', () => {
+    const ed = new LineEditor()
+    for (const ch of 'git sttus') ed.handle(ch)
+    ed.handle('\x1b[D')
+    ed.handle('\x1b[D')
+    ed.handle('\x1b[D')
+    ed.handle('a')
+    expect(ed.buffer).toBe('git status')
+    const actions = ed.handle('\r')
+    expect(actions).toEqual([{ type: 'submit', line: 'git status' }])
+    expect(ed.buffer).toBe('')
+  })
+  it('navigates history and keeps the draft', () => {
+    const ed = new LineEditor(['ls', 'git log'])
+    for (const ch of 'dra') ed.handle(ch)
+    ed.handle('\x1b[A')
+    expect(ed.buffer).toBe('git log')
+    ed.handle('\x1b[A')
+    expect(ed.buffer).toBe('ls')
+    ed.handle('\x1b[B')
+    ed.handle('\x1b[B')
+    expect(ed.buffer).toBe('dra')
+  })
+  it('handles pasted multi-line input and control keys', () => {
+    const ed = new LineEditor()
+    const actions = ed.handle('echo a\necho b\necho c')
+    expect(actions.map((a) => (a.type === 'submit' ? a.line : a.type))).toEqual(['echo a', 'echo b'])
+    expect(ed.buffer).toBe('echo c')
+    expect(ed.handle('\x03')).toEqual([{ type: 'interrupt' }])
+    expect(ed.buffer).toBe('')
+    for (const ch of 'abc def') ed.handle(ch)
+    ed.handle('\x17')
+    expect(ed.buffer).toBe('abc ')
+    ed.handle('\x15')
+    expect(ed.buffer).toBe('')
+  })
+  it('requests completion for the current word', () => {
+    const ed = new LineEditor()
+    for (const ch of 'git sw') ed.handle(ch)
+    expect(ed.handle('\t')).toEqual([{ type: 'complete', prefix: 'git ', word: 'sw' }])
+    ed.applyCompletion('git ', 'switch ')
+    expect(ed.buffer).toBe('git switch ')
+    expect(commonPrefix(['feature/a', 'feature/b'])).toBe('feature/')
+  })
+})

@@ -1,0 +1,107 @@
+{
+  "id": "t1-ignore-files",
+  "schemaVersion": 1,
+  "track": "foundations",
+  "order": 10,
+  "title": "Keep secrets and junk out of history",
+  "estimatedMinutes": 9,
+  "difficulty": "intro",
+  "skills": ["hygiene"],
+  "scenario": {
+    "company": "Your own project",
+    "role": "Beginner",
+    "brief": "**Where you are.** `my-notes` grew into a tiny website. Two things are in the folder that should never be saved in history: a file called `.env` holding a password, and a `build/` folder full of generated files that can be recreated any time. Priya already committed both by accident. Oops.\n\n**Two separate problems.**\n\n- Git must stop *suggesting* them. A file named `.gitignore` lists names Git should ignore. One name per line; folders end with a slash.\n- Git must stop *tracking* the ones already saved. `.gitignore` does not touch files that are already in history. `git rm --cached <file>` removes a file from Git's list but keeps it on your disk. For a folder add `-r`.\n\n**What you'll do.**\n\n1. Create `.gitignore` with two lines: `.env` and `build/`. Quick way: `echo -e \".env\\nbuild/\" > .gitignore`\n2. Untrack what was already committed: `git rm --cached .env` and `git rm -r --cached build`.\n3. Run `git status`. The ignored files are gone from the list; `.gitignore` is new.\n4. Commit: `git add .gitignore` then `git commit -m \"Ignore the env file and build output\"`.\n5. Check `ls -a`: `.env` is still on disk. Good.\n\n**Note for later.** The password is still inside the *old* commits. Real teams change the password immediately; removing it from old history is a later lesson.",
+    "whyItMatters": "Leaked passwords and committed build output are the two most common beginner mistakes in real repositories. Knowing the difference between \"stop tracking\" and \"delete\" keeps you from breaking your own setup while fixing it."
+  },
+  "workspace": { "projectDir": "my-notes" },
+  "cast": { "priya": { "name": "Priya Natarajan", "email": "priya@example.com", "role": "Friend" } },
+  "seed": {
+    "steps": [
+      { "type": "commit", "author": "you", "message": "Turn notes into a tiny website", "files": {
+        "index.html": "<!doctype html>\n<h1>My notes</h1>\n",
+        "notes.md": "# My notes\n\nThings I am learning about Git.\n"
+      } },
+      { "type": "commit", "author": "priya", "message": "Add build script and config", "label": "start", "files": {
+        ".env": "SITE_PASSWORD=hunter2\n",
+        "build/index.html": "<!doctype html><h1>My notes</h1>\n",
+        "build/styles.css": "h1{font-family:sans-serif}\n",
+        "build.sh": "#!/bin/sh\nmkdir -p build && cp index.html build/\n"
+      } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "gitignore",
+      "title": "Create .gitignore listing .env and build/",
+      "check": { "type": "all", "checks": [
+        { "type": "fileIgnored", "path": ".env" },
+        { "type": "fileIgnored", "path": "build/index.html" }
+      ] },
+      "hints": [
+        "A plain text file named exactly `.gitignore` in the project folder. One pattern per line.",
+        "`.env` ignores that file. `build/` with a slash ignores the whole folder.",
+        "Type: `echo -e \".env\\nbuild/\" > .gitignore` (or create the file in the editor with those two lines)."
+      ]
+    },
+    {
+      "id": "untrack",
+      "title": "Stop tracking .env and build/ without deleting them",
+      "check": { "type": "all", "checks": [
+        { "type": "fileNotTracked", "path": ".env" },
+        { "type": "fileNotTracked", "path": "build/index.html" },
+        { "type": "fileExists", "path": ".env" },
+        { "type": "fileExists", "path": "build/index.html" }
+      ] },
+      "hints": [
+        "Ignoring does not untrack. Already-saved files need to be removed from Git's list, but not from your disk.",
+        "`git rm --cached <file>` does exactly that. For a folder use `git rm -r --cached <folder>`.",
+        "Type: `git rm --cached .env` and then `git rm -r --cached build`"
+      ]
+    },
+    {
+      "id": "commit",
+      "title": "Commit the clean-up",
+      "description": "The latest commit should contain .gitignore and no longer contain .env or build/.",
+      "check": { "type": "all", "checks": [
+        { "type": "fileTracked", "path": ".gitignore", "ref": "HEAD" },
+        { "type": "fileNotTracked", "path": ".env", "ref": "HEAD" },
+        { "type": "fileNotTracked", "path": "build/index.html", "ref": "HEAD" },
+        { "type": "fileExists", "path": ".env" },
+        { "type": "workingTreeClean" }
+      ] },
+      "hints": [
+        "Stage the new .gitignore (the removals are already staged by git rm) and commit.",
+        "`git status` should show `.gitignore` as new and `.env` and the build files as deleted. That deletion is only from tracking.",
+        "Type: `git add .gitignore` then `git commit -m \"Ignore the env file and build output\"`"
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You told Git which files to ignore and removed already-tracked ones from history going forward, without deleting them from your computer.",
+    "internals": [
+      ".gitignore only affects files Git is not tracking yet. It is advice about what to suggest, not a command to forget things.",
+      "`git rm --cached` removed the entries from the staging list, so the next commit's snapshot simply does not include them. The files on disk were untouched.",
+      "Old commits still contain the .env file. Commits never change; that is why the password itself must be changed."
+    ],
+    "keyCommands": [
+      { "command": ".gitignore", "note": "One pattern per line. `build/` for folders, `*.log` for all log files." },
+      { "command": "git rm --cached <file>", "note": "Untrack but keep the file. `-r` for folders." },
+      { "command": "ls -a", "note": "List files including hidden ones that start with a dot." }
+    ],
+    "commonMistakes": [
+      "Adding .gitignore and expecting tracked files to disappear from `git status`.",
+      "Using `git rm` without `--cached` and deleting your only copy of the file.",
+      "Believing the secret is gone. It lives on in older commits until history is rewritten and the secret is rotated."
+    ],
+    "atWork": "Every real project has a .gitignore from day one. Companies also run scanners that block pushes containing passwords, so this habit saves you an awkward conversation.",
+    "interview": "\"A password was committed. What do you do?\" Answer: change the password first, then untrack and ignore the file, then consider cleaning history."
+  },
+  "solution": [
+    "echo -e \".env\\nbuild/\" > .gitignore",
+    "git rm --cached .env",
+    "git rm -r --cached build",
+    "git add .gitignore",
+    "git commit -m \"Ignore the env file and build output\"",
+    "ls -a"
+  ]
+}

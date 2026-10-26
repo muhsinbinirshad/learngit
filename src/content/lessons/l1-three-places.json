@@ -1,0 +1,76 @@
+{
+  "id": "l1-three-places",
+  "track": "foundations",
+  "order": 2,
+  "title": "Git's three places: files, staging area, history",
+  "estimatedMinutes": 5,
+  "summary": "Every change moves through three places: the files you edit, the staging area where you choose what to save, and the history where commits live. Most confusion in Git comes from forgetting which place you are looking at.",
+  "sections": [
+    {
+      "heading": "Place 1: your files (the working tree)",
+      "body": "These are the ordinary files in the project folder, exactly as the editor shows them. Edit them however you like. Git notices changes but does nothing with them until you ask."
+    },
+    {
+      "heading": "Place 2: the staging area",
+      "body": "Think of a box labelled \"next commit\". `git add <file>` puts the current version of that file in the box. You can add one file and leave another out. You can take a file back out with `git restore --staged <file>`. The box is how you decide what a commit contains."
+    },
+    {
+      "heading": "Place 3: history",
+      "body": "`git commit` seals the box into a snapshot and adds it to the chain. From that moment the snapshot is permanent and safe. Your files and the box are not emptied; they simply now match what was saved, so `git status` reports nothing to do."
+    },
+    {
+      "heading": "What git status tells you",
+      "body": "`git status` is a report on places 1 and 2:\n\n- **Untracked files**: new files Git has never saved and that are not in the box.\n- **Changes not staged for commit**: tracked files you edited since the last commit, not yet in the box.\n- **Changes to be committed**: what is in the box right now.\n- **nothing to commit, working tree clean**: files, box and latest commit all match.\n\nThe Repository pane on the right of every lab shows the same three places as a strip: working tree, staging area, HEAD (the latest commit)."
+    }
+  ],
+  "takeaways": [
+    "Edit in the working tree, choose with git add, save with git commit.",
+    "git status reports which place each change is in.",
+    "A commit is permanent; files and staging area simply match it afterwards."
+  ],
+  "quiz": [
+    {
+      "question": "You edited a file but have not run git add. Where is the change?",
+      "options": [
+        "In history",
+        "In the staging area",
+        "Only in the working tree (your files)"
+      ],
+      "answer": 2,
+      "explanation": "Until you add it, the change exists only in the file on disk."
+    },
+    {
+      "question": "What does `git add file.md` do?",
+      "options": [
+        "Saves a permanent snapshot",
+        "Puts the file's current version in the staging area",
+        "Uploads the file"
+      ],
+      "answer": 1,
+      "explanation": "add stages; commit saves."
+    },
+    {
+      "question": "After a commit, `git status` says the working tree is clean. That means...",
+      "options": [
+        "All files were deleted",
+        "Files, staging area and the latest commit all match",
+        "Git is turned off"
+      ],
+      "answer": 1,
+      "explanation": "Clean means there is nothing new to save."
+    }
+  ],
+  "videos": [
+    {
+      "title": "How Git Works: Explained in 4 Minutes",
+      "channel": "ByteByteGo",
+      "url": "https://www.youtube.com/watch?v=e9lnsKot_SQ",
+      "note": "Working directory, staging area and repository with a diagram."
+    },
+    {
+      "title": "How Git works (.git directory explained)",
+      "url": "https://www.youtube.com/watch?v=cLBvn81naWY",
+      "note": "For the curious: what is inside the hidden folder."
+    }
+  ]
+}

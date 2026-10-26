@@ -1,0 +1,76 @@
+{
+  "id": "l0-git-vs-hub",
+  "track": "before-you-start",
+  "order": 4,
+  "title": "Git versus a hosting site (GitHub, and our Hub)",
+  "estimatedMinutes": 5,
+  "summary": "Git is the tool on your machine. A hosting site is a website that stores a copy of repositories and adds collaboration features on top. They are different things that work together.",
+  "sections": [
+    {
+      "heading": "Two different things",
+      "body": "People say \"GitHub\" when they mean Git, and the other way round. Keep them apart:\n\n- **Git** is a program on your computer. It makes commits, branches and history. It does not need the internet.\n- **A hosting site** (GitHub, GitLab, Bitbucket, and the simulated **Hub** used in this course) is a website that keeps a copy of your repository online. It adds pull requests, issues, reviews, permissions and automated checks. Those features are not part of Git itself."
+    },
+    {
+      "heading": "What you already saw on a public repo page",
+      "body": "If you have browsed a public repository, you have seen Git data through a website:\n\n- The file list is the latest commit on the default branch.\n- The \"commits\" count and list is the history.\n- The branch dropdown lists branches.\n- \"Pull requests\" and \"Issues\" are hosting-site features layered on top.\n\nEverything in the first two points comes from Git. You are about to learn how to create that data yourself, from the command line."
+    },
+    {
+      "heading": "How the copies stay in sync",
+      "body": "Your computer holds a full repository. The hosting site holds another full copy, called the **remote**. Three commands move commits between them:\n\n- `git clone` makes your first local copy from the remote.\n- `git push` sends your new commits to the remote.\n- `git pull` brings other people's commits from the remote to you.\n\nTrack 3 teaches these. Until then, every lab works entirely on your local repository."
+    },
+    {
+      "heading": "Why this course uses Hub",
+      "body": "Hub is a small, offline hosting site built into this platform. It behaves like the real ones (repositories, pull requests, reviews, teammates who push and comment) without needing an account. What you practise on Hub transfers directly to GitHub or GitLab."
+    }
+  ],
+  "takeaways": [
+    "Git is local software; a hosting site is a website with an extra copy and collaboration features.",
+    "A public repo page is a view of Git history plus hosting features like pull requests.",
+    "clone, push and pull move commits between your copy and the remote."
+  ],
+  "quiz": [
+    {
+      "question": "Which statement is true?",
+      "options": [
+        "You need an internet connection to make a commit",
+        "Git works locally; a hosting site stores a copy and adds review features",
+        "GitHub and Git are the same program"
+      ],
+      "answer": 1,
+      "explanation": "Commits are local. The hosting site only receives them when you push."
+    },
+    {
+      "question": "What does `git push` do?",
+      "options": [
+        "Deletes local history",
+        "Sends your new commits to the remote copy",
+        "Downloads the repository for the first time"
+      ],
+      "answer": 1,
+      "explanation": "Push uploads commits; clone makes the first local copy; pull downloads others' commits."
+    },
+    {
+      "question": "Pull requests are a feature of...",
+      "options": [
+        "Git itself",
+        "The hosting site",
+        "Your text editor"
+      ],
+      "answer": 1,
+      "explanation": "Git has no concept of a pull request. Hosting sites built review on top of Git branches."
+    }
+  ],
+  "videos": [
+    {
+      "title": "GitHub Pull Requests Explained for Beginners",
+      "channel": "GitHub Foundations",
+      "url": "https://www.youtube.com/watch?v=gBIPCZ0abQY",
+      "note": "The hosting-site side: what a pull request page is for."
+    },
+    {
+      "title": "GitHub Basics Tutorial - How to Use GitHub",
+      "url": "https://www.youtube.com/watch?v=x0EYpi38Yp4",
+      "note": "Repositories, files and branches as seen on the website."
+    }
+  ]
+}

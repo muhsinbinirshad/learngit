@@ -1,0 +1,67 @@
+{
+  "id": "l0-ci-cd",
+  "track": "before-you-start",
+  "order": 5,
+  "title": "What CI/CD is",
+  "estimatedMinutes": 5,
+  "summary": "Automated checks run on every push, and automated deployment ships code that passes. It is why teams care so much about small commits and a clean main branch.",
+  "sections": [
+    {
+      "heading": "CI: continuous integration",
+      "body": "When you push commits to the hosting site, a robot wakes up. It downloads your branch, installs the project, runs the tests, checks formatting and sometimes security scans. This is **continuous integration (CI)**. Results show up on the pull request as green ticks or red crosses.\n\nA red check usually blocks merging. So before a reviewer even looks, the machine has already told you whether you broke something."
+    },
+    {
+      "heading": "CD: continuous delivery or deployment",
+      "body": "Once a change is merged into main, another robot can build the product and put it in front of users automatically. That is **continuous deployment**. Some teams stop one step earlier and keep a button for a human to press; that is continuous delivery. Either way, main going green means the change is on its way to customers.\n\nThis is why main is protected and why a bad commit on main is treated as an incident."
+    },
+    {
+      "heading": "What it means for how you use Git",
+      "body": "- Small commits are easier to test and easier to undo when a check fails.\n- Clear messages let the person on call understand what shipped.\n- Never commit half-finished code to a shared branch; CI would run it and go red for everyone.\n- Secrets must not be in the repository, because CI logs and deploys are visible to many people.\n\nSeveral labs simulate a CI check so you can see these rules in action."
+    }
+  ],
+  "takeaways": [
+    "CI runs automatic checks on every push and reports on the pull request.",
+    "CD ships merged code to users, often automatically.",
+    "Small, clean, well-described commits exist because of this pipeline."
+  ],
+  "quiz": [
+    {
+      "question": "What happens when you push a branch to a team with CI?",
+      "options": [
+        "Nothing until a human runs the tests",
+        "Automated checks run and report green or red on the pull request",
+        "The code is sent to customers immediately"
+      ],
+      "answer": 1,
+      "explanation": "CI runs tests and checks automatically; deployment usually happens only after merge."
+    },
+    {
+      "question": "Why do teams insist on small commits?",
+      "options": [
+        "Because Git has a size limit",
+        "Because they are easier to test, review and undo when a check fails",
+        "Because large commits cost money"
+      ],
+      "answer": 1,
+      "explanation": "Small changes isolate failures and make rollbacks precise."
+    },
+    {
+      "question": "A commit with half-finished code on a shared branch would...",
+      "options": [
+        "Be ignored by CI",
+        "Make CI fail for everyone on that branch",
+        "Be deleted automatically"
+      ],
+      "answer": 1,
+      "explanation": "CI tests whatever is pushed. Broken work on a shared branch blocks teammates."
+    }
+  ],
+  "videos": [
+    {
+      "title": "GitHub Actions Tutorial - Basic Concepts and CI/CD Pipeline with Docker",
+      "channel": "TechWorld with Nana",
+      "url": "https://www.youtube.com/watch?v=R8_veQiYBjI",
+      "note": "Watch the first part for the concepts; the Docker demo is optional."
+    }
+  ]
+}

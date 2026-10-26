@@ -1,0 +1,632 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://commitlab.dev/schemas/lab.schema.json",
+  "title": "Commit Lab — Lab definition",
+  "description": "A scenario-based Git lab. Labs are pure data: seed steps build the starting repository, objectives are declarative checks against real repository state, and the debrief closes the loop.",
+  "type": "object",
+  "required": [
+    "id",
+    "schemaVersion",
+    "track",
+    "order",
+    "title",
+    "estimatedMinutes",
+    "difficulty",
+    "skills",
+    "scenario",
+    "workspace",
+    "seed",
+    "objectives",
+    "debrief",
+    "solution"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "track": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "estimatedMinutes": {
+      "type": "integer",
+      "minimum": 3,
+      "maximum": 60
+    },
+    "difficulty": {
+      "enum": [
+        "intro",
+        "core",
+        "advanced"
+      ]
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "commits",
+          "staging",
+          "history",
+          "hygiene",
+          "branching",
+          "merging",
+          "conflicts",
+          "stash",
+          "rebasing",
+          "remotes",
+          "collaboration",
+          "review",
+          "recovery",
+          "workflows",
+          "releases"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "scenario": {
+      "type": "object",
+      "required": [
+        "company",
+        "role",
+        "brief",
+        "whyItMatters"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "brief": {
+          "type": "string",
+          "minLength": 40
+        },
+        "whyItMatters": {
+          "type": "string",
+          "minLength": 20
+        }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": [
+        "projectDir"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "projectDir": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9._-]+$"
+        },
+        "identity": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/persona"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "cast": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/persona"
+      }
+    },
+    "seed": {
+      "type": "object",
+      "required": [
+        "steps"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "stepMinutes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/seedStep"
+          }
+        }
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "check",
+          "hints"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 90
+          },
+          "description": {
+            "type": "string"
+          },
+          "check": {
+            "$ref": "#/$defs/check"
+          },
+          "hints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 3
+          },
+          "sticky": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "debrief": {
+      "type": "object",
+      "required": [
+        "summary",
+        "internals",
+        "keyCommands",
+        "commonMistakes",
+        "atWork"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "internals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "keyCommands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "command",
+              "note"
+            ],
+            "properties": {
+              "command": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "commonMistakes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "atWork": {
+          "type": "string"
+        },
+        "interview": {
+          "type": "string"
+        }
+      }
+    },
+    "solution": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "persona": {
+      "type": "object",
+      "required": [
+        "name",
+        "email"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
+    "seedStep": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "path",
+            "content"
+          ],
+          "properties": {
+            "type": {
+              "const": "file"
+            },
+            "path": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "path"
+          ],
+          "properties": {
+            "type": {
+              "const": "delete"
+            },
+            "path": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "message"
+          ],
+          "properties": {
+            "type": {
+              "const": "commit"
+            },
+            "message": {
+              "type": "string"
+            },
+            "author": {
+              "type": "string"
+            },
+            "files": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "delete": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "label": {
+              "type": "string"
+            },
+            "allowEmpty": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "name"
+          ],
+          "properties": {
+            "type": {
+              "const": "branch"
+            },
+            "name": {
+              "type": "string"
+            },
+            "from": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "ref"
+          ],
+          "properties": {
+            "type": {
+              "const": "checkout"
+            },
+            "ref": {
+              "type": "string"
+            },
+            "create": {
+              "type": "boolean"
+            },
+            "detach": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "ref"
+          ],
+          "properties": {
+            "type": {
+              "const": "merge"
+            },
+            "ref": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "name"
+          ],
+          "properties": {
+            "type": {
+              "const": "tag"
+            },
+            "name": {
+              "type": "string"
+            },
+            "ref": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "paths"
+          ],
+          "properties": {
+            "type": {
+              "const": "stage"
+            },
+            "paths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "stash"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "key",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "config"
+            },
+            "key": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            },
+            "global": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "name",
+            "path"
+          ],
+          "properties": {
+            "type": {
+              "const": "remote"
+            },
+            "name": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "push"
+            },
+            "remote": {
+              "type": "string"
+            },
+            "branch": {
+              "type": "string"
+            },
+            "setUpstream": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "mode",
+            "ref"
+          ],
+          "properties": {
+            "type": {
+              "const": "reset"
+            },
+            "mode": {
+              "enum": [
+                "soft",
+                "mixed",
+                "hard"
+              ]
+            },
+            "ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "command"
+          ],
+          "properties": {
+            "type": {
+              "const": "shell"
+            },
+            "command": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "check": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "branchExists",
+            "branchNotExists",
+            "headOnBranch",
+            "headDetached",
+            "headEquals",
+            "commitCount",
+            "commitMessageMatches",
+            "commitMessageFormat",
+            "commitAuthor",
+            "commitTouchesOnly",
+            "commitChangesPath",
+            "headIsMergeCommit",
+            "mergeCommitWithParent",
+            "linearHistory",
+            "refContains",
+            "refsEqual",
+            "tagExists",
+            "fileExists",
+            "fileNotExists",
+            "fileContains",
+            "fileNotContains",
+            "fileTracked",
+            "fileNotTracked",
+            "fileStaged",
+            "fileHasUnstagedChanges",
+            "fileIgnored",
+            "workingTreeClean",
+            "noStagedChanges",
+            "noConflictMarkers",
+            "noConflicts",
+            "noOperationInProgress",
+            "stashCount",
+            "configSet",
+            "reflogContains",
+            "remoteBranchEquals",
+            "remoteBranchExists",
+            "not",
+            "all",
+            "any"
+          ]
+        }
+      },
+      "description": "A declarative check against repository state. `ref` values accept any revision (HEAD, main, feature~1, tags) or `label:<name>` for a commit labeled in the seed. Patterns are regular expressions; `{{label:<name>:short}}` interpolates a seeded commit's short hash. `mergeCommitWithParent` accepts `position`: any (default), first, nonFirst."
+    }
+  }
+}

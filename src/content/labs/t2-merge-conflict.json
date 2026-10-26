@@ -1,0 +1,279 @@
+{
+  "id": "t2-merge-conflict",
+  "schemaVersion": 1,
+  "track": "branching-merging",
+  "order": 3,
+  "title": "Two engineers edited the same function",
+  "estimatedMinutes": 15,
+  "difficulty": "core",
+  "skills": [
+    "merging",
+    "conflicts"
+  ],
+  "scenario": {
+    "company": "Brightwater Energy",
+    "role": "Backend Engineer, Billing team",
+    "brief": "Two changes to `applyDiscount` in `src/pricing.js` landed on different branches this week:\n\n- On `main`, Jonas made discounted totals round to cents so invoices stop showing values like `41.3299999`.\n- On `fix/discount-cap`, Mei fixed a policy bug: discounts above 50% were being honoured. Her change clamps the rate with `Math.min(discount, MAX_DISCOUNT)`.\n\nBoth changes are correct and both must survive. Merge `fix/discount-cap` into `main`. Git will stop with a conflict because both branches edited the same lines of the same function.\n\nResolve it so the final `applyDiscount` clamps the rate **and** rounds the result, remove every conflict marker, stage the file and complete the merge. The tests in `test/pricing.test.js` describe the expected behaviour if you want to check your resolution by reading.",
+    "whyItMatters": "Conflicts are not errors; they are Git asking a human to make a decision it cannot make safely. Engineers who resolve conflicts calmly and correctly, keeping both intents, are the ones trusted to integrate other people's work."
+  },
+  "workspace": {
+    "projectDir": "billing-service"
+  },
+  "cast": {
+    "mei": {
+      "name": "Mei Lin",
+      "email": "mei.lin@brightwater.energy",
+      "role": "Senior Engineer"
+    },
+    "jonas": {
+      "name": "Jonas Weber",
+      "email": "jonas.weber@brightwater.energy",
+      "role": "Engineer"
+    }
+  },
+  "seed": {
+    "startDate": "2026-02-23T09:00:00Z",
+    "stepMinutes": 180,
+    "steps": [
+      {
+        "type": "commit",
+        "author": "mei",
+        "message": "Scaffold billing service",
+        "files": {
+          "README.md": "# Billing Service\n\nComputes invoice totals, discounts and taxes for Brightwater Energy customers.\n",
+          "src/pricing.js": "const MAX_DISCOUNT = 0.5\n\nfunction applyDiscount(total, discount) {\n  return total - total * discount\n}\n\nfunction addTax(total, taxRate) {\n  return total + total * taxRate\n}\n\nmodule.exports = { applyDiscount, addTax, MAX_DISCOUNT }\n",
+          "test/pricing.test.js": "const test = require('node:test')\nconst assert = require('node:assert')\nconst { applyDiscount } = require('../src/pricing')\n\ntest('caps discount at 50%', () => {\n  assert.strictEqual(applyDiscount(100, 0.9), 50)\n})\n\ntest('rounds to cents', () => {\n  assert.strictEqual(applyDiscount(41.33, 0.1), 37.2)\n})\n"
+        }
+      },
+      {
+        "type": "branch",
+        "name": "fix/discount-cap",
+        "from": "main"
+      },
+      {
+        "type": "checkout",
+        "ref": "fix/discount-cap"
+      },
+      {
+        "type": "commit",
+        "author": "mei",
+        "message": "Clamp discount rate at MAX_DISCOUNT\n\nA promo code with a 90% discount was honoured in full. Policy caps\ndiscounts at 50% of the subtotal.",
+        "files": {
+          "src/pricing.js": "const MAX_DISCOUNT = 0.5\n\nfunction applyDiscount(total, discount) {\n  const rate = Math.min(discount, MAX_DISCOUNT)\n  return total - total * rate\n}\n\nfunction addTax(total, taxRate) {\n  return total + total * taxRate\n}\n\nmodule.exports = { applyDiscount, addTax, MAX_DISCOUNT }\n"
+        }
+      },
+      {
+        "type": "checkout",
+        "ref": "main"
+      },
+      {
+        "type": "commit",
+        "author": "jonas",
+        "message": "Round discounted totals to cents\n\nFloating point error produced totals like 41.3299999 on invoices.",
+        "label": "main-tip",
+        "files": {
+          "src/pricing.js": "const MAX_DISCOUNT = 0.5\n\nfunction applyDiscount(total, discount) {\n  const discounted = total - total * discount\n  return Math.round(discounted * 100) / 100\n}\n\nfunction addTax(total, taxRate) {\n  return total + total * taxRate\n}\n\nmodule.exports = { applyDiscount, addTax, MAX_DISCOUNT }\n"
+        }
+      }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "merge-started",
+      "title": "Start merging fix/discount-cap into main and hit the conflict",
+      "check": {
+        "type": "any",
+        "checks": [
+          {
+            "type": "all",
+            "checks": [
+              {
+                "type": "headOnBranch",
+                "name": "main"
+              },
+              {
+                "type": "noConflicts"
+              },
+              {
+                "type": "not",
+                "check": {
+                  "type": "noOperationInProgress"
+                }
+              }
+            ]
+          },
+          {
+            "type": "all",
+            "checks": [
+              {
+                "type": "headOnBranch",
+                "name": "main"
+              },
+              {
+                "type": "fileContains",
+                "path": "src/pricing.js",
+                "pattern": "^<{7} ",
+                "flags": "m"
+              }
+            ]
+          },
+          {
+            "type": "mergeCommitWithParent",
+            "ref": "main",
+            "parent": "fix/discount-cap"
+          }
+        ]
+      },
+      "hints": [
+        "Make sure you are on main, then merge the fix branch. The conflict is expected.",
+        "`git merge fix/discount-cap` will report CONFLICT (content) in src/pricing.js and leave markers in the file. `git status` lists it under Unmerged paths.",
+        "Run `git merge fix/discount-cap`, then open src/pricing.js (`code src/pricing.js`) to see both versions between the markers."
+      ]
+    },
+    {
+      "id": "resolved-content",
+      "title": "Make applyDiscount clamp the rate and round the result",
+      "description": "Both Math.min(discount, MAX_DISCOUNT) and Math.round(...) must be present in the committed file.",
+      "check": {
+        "type": "all",
+        "checks": [
+          {
+            "type": "fileContains",
+            "ref": "main",
+            "path": "src/pricing.js",
+            "pattern": "Math\\.min\\(discount, MAX_DISCOUNT\\)"
+          },
+          {
+            "type": "fileContains",
+            "ref": "main",
+            "path": "src/pricing.js",
+            "pattern": "Math\\.round\\("
+          }
+        ]
+      },
+      "hints": [
+        "Everything between `<<<<<<< HEAD` and `=======` is main's version; between `=======` and `>>>>>>> fix/discount-cap` is Mei's. You need a function that does both.",
+        "A correct body: compute `const rate = Math.min(discount, MAX_DISCOUNT)`, then `const discounted = total - total * rate`, then `return Math.round(discounted * 100) / 100`.",
+        "In the editor use Accept Both and then edit so the three lines above appear once, in order. Remove any leftover duplicate return."
+      ]
+    },
+    {
+      "id": "no-markers",
+      "title": "Remove every conflict marker and stage the resolution",
+      "check": {
+        "type": "all",
+        "checks": [
+          {
+            "type": "any",
+            "checks": [
+              {
+                "type": "mergeCommitWithParent",
+                "ref": "main",
+                "parent": "fix/discount-cap"
+              },
+              {
+                "type": "not",
+                "check": {
+                  "type": "noOperationInProgress"
+                }
+              }
+            ]
+          },
+          {
+            "type": "noConflictMarkers",
+            "path": "src/pricing.js"
+          },
+          {
+            "type": "fileNotContains",
+            "ref": "main",
+            "path": "src/pricing.js",
+            "pattern": "^(<{7}|={7}|>{7})",
+            "flags": "m"
+          },
+          {
+            "type": "noConflicts"
+          }
+        ]
+      },
+      "hints": [
+        "Conflict markers are plain text; if you commit them the code will not even parse.",
+        "After editing, `git add src/pricing.js` tells Git the conflict is resolved. `git diff` should show no `<<<<<<<` lines.",
+        "Run `git add src/pricing.js`, then `git status` should say \"All conflicts fixed but you are still merging\"."
+      ]
+    },
+    {
+      "id": "merge-commit",
+      "title": "Complete the merge with a merge commit on main",
+      "check": {
+        "type": "all",
+        "checks": [
+          {
+            "type": "headOnBranch",
+            "name": "main"
+          },
+          {
+            "type": "mergeCommitWithParent",
+            "ref": "main",
+            "parent": "fix/discount-cap"
+          },
+          {
+            "type": "noOperationInProgress"
+          },
+          {
+            "type": "workingTreeClean"
+          }
+        ]
+      },
+      "hints": [
+        "A merge that stopped for conflicts is finished by committing.",
+        "`git commit` with no message opens the editor with the prepared merge message; `-m` works too.",
+        "Run `git commit` (or `git merge --continue`) and check `git log --oneline --graph` for the two-parent commit."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You merged two conflicting edits to the same function, preserved both intents, and recorded the result as a merge commit.",
+    "internals": [
+      "Git found the merge base (the scaffold commit) and diffed both branches against it. Both diffs touched the same lines in applyDiscount, so the three-way merge could not pick a side.",
+      "Git wrote the conflicted file with markers and recorded the path as unmerged. The merge paused with `MERGE_HEAD` pointing at fix/discount-cap so `git commit` knows to create a two-parent commit.",
+      "`git add` replaced the unmerged entry with your resolved blob. The merge commit's tree contains that blob; its parents are the previous main tip and the fix branch tip.",
+      "Only the conflicted file needed attention. Files changed on one side only were merged automatically."
+    ],
+    "keyCommands": [
+      {
+        "command": "git merge <branch>",
+        "note": "Starts the merge; stops on conflicts."
+      },
+      {
+        "command": "git status",
+        "note": "Lists unmerged paths and tells you how to continue or abort."
+      },
+      {
+        "command": "git diff",
+        "note": "During a conflict, shows the conflicted regions."
+      },
+      {
+        "command": "git merge --abort",
+        "note": "Give up and return to the pre-merge state. Always available."
+      },
+      {
+        "command": "git checkout --ours / --theirs <file>",
+        "note": "Take one whole side when that is the right answer."
+      }
+    ],
+    "commonMistakes": [
+      "Taking one side wholesale (\"accept current\") and silently dropping the other engineer's fix.",
+      "Leaving a marker line behind; the file no longer parses and CI fails.",
+      "Forgetting `git add` after editing and wondering why `git commit` refuses.",
+      "Panicking and deleting the repository. `git merge --abort` restores the pre-merge state in one command."
+    ],
+    "atWork": "Conflicts appear whenever two people touch the same area, which is constant on active teams. Resolving them is a communication task as much as a technical one: when the right combination is unclear, ask the other author rather than guessing.",
+    "interview": "\"Walk me through resolving a merge conflict.\" Mention reading both sides, understanding intent, editing to a correct combination, removing markers, `git add`, then committing, and knowing `--abort` exists."
+  },
+  "solution": [
+    "git merge fix/discount-cap",
+    "echo -e \"const MAX_DISCOUNT = 0.5\\n\\nfunction applyDiscount(total, discount) {\\n  const rate = Math.min(discount, MAX_DISCOUNT)\\n  const discounted = total - total * rate\\n  return Math.round(discounted * 100) / 100\\n}\\n\\nfunction addTax(total, taxRate) {\\n  return total + total * taxRate\\n}\\n\\nmodule.exports = { applyDiscount, addTax, MAX_DISCOUNT }\" > src/pricing.js",
+    "git add src/pricing.js",
+    "git commit -m \"Merge branch 'fix/discount-cap'\" -m \"Keep both the discount cap and cent rounding in applyDiscount.\""
+  ]
+}
