@@ -1,0 +1,13 @@
+# Ledgerly code owners. A review from the matching owner is required to merge.
+# Teams are fictional handles in the Ledgerly engineering org.
+
+*                       @ledgerly-eng/maintainers
+
+/packages/shared/       @ledgerly-eng/domain
+/api/                   @ledgerly-eng/backend
+/web/                   @ledgerly-eng/frontend
+
+# Security-sensitive files need the platform team.
+/api/src/config.ts      @ledgerly-eng/platform
+SECURITY.md             @ledgerly-eng/platform
+/.github/               @ledgerly-eng/platform

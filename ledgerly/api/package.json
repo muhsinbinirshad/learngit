@@ -1,0 +1,9 @@
+{
+  "name": "@ledgerly/api",
+  "version": "1.4.2",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ledgerly/shared": "*"
+  }
+}

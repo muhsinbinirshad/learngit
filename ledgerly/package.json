@@ -1,0 +1,22 @@
+{
+  "name": "ledgerly",
+  "version": "1.4.2",
+  "private": true,
+  "description": "Ledgerly — invoicing for small teams. Monorepo: shared domain, API and web.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.6"
+  },
+  "workspaces": [
+    "packages/*",
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --test \"packages/shared/src/**/*.test.ts\" \"api/src/**/*.test.ts\" \"web/src/**/*.test.ts\"",
+    "typecheck": "npx --yes typescript@5.6.3 tsc -p tsconfig.json",
+    "lint": "npx --yes eslint@9.13.0 .",
+    "dev": "node --experimental-strip-types api/src/server.ts"
+  },
+  "license": "UNLICENSED"
+}
