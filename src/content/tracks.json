@@ -132,6 +132,7 @@
     "tagline": "Cherry-pick a fix to a release, and the one rule that keeps rewriting safe",
     "description": "Sometimes you need to reshape commits before anyone sees them, or copy one fix to another branch. This track covers the safe moves — starting with getting a single fix onto a shipped release — and the golden rule: only rewrite history that nobody else has.",
     "items": [
+      { "type": "lab", "id": "t4-rebase-clean" },
       { "type": "lab", "id": "t4-cherry-pick" }
     ]
   },

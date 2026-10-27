@@ -1,0 +1,65 @@
+{
+  "id": "t4-rebase-clean",
+  "schemaVersion": 1,
+  "track": "rewriting-history",
+  "order": 1,
+  "title": "Clean up a branch with interactive rebase",
+  "estimatedMinutes": 15,
+  "difficulty": "advanced",
+  "skills": ["rebasing", "history"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "You're about to open a pull request for the CSV export, but your branch history is a mess: five commits called things like `wip`, `oops fix typo`, `more`, and `address review comments`. A reviewer shouldn't have to wade through that — a pull request should present a clean, deliberate history.\n\nUse **interactive rebase** to rewrite those five commits into a single, well-described commit, before anyone sees them.\n\nThe branch hasn't been pushed or shared, so rewriting it is safe — that's the rule: only rewrite history that no one else has.\n\n**Approach.** Start an interactive rebase over the five commits: `git rebase -i HEAD~5`. In the todo list, keep the first commit as `pick` and change the rest to `squash` (or `fixup`) so they fold into it. Give the combined commit a clear message, e.g. `feat(api): add CSV export`. When you finish, the branch should have exactly one commit on top of where it started, and the export code should still be there.",
+    "whyItMatters": "The history you present in a pull request is part of your communication. Interactive rebase lets you turn a day of messy checkpoints into a reviewable story. It's a core skill — and a common interview topic — precisely because it shows you understand that commits are for readers, not just for saving."
+  },
+  "workspace": { "projectDir": "ledgerly" },
+  "seed": { "packRef": "t4-rebase" },
+  "objectives": [
+    {
+      "id": "one-commit",
+      "title": "Squash the five commits into one",
+      "description": "The branch should have exactly one commit that isn't already on main.",
+      "check": { "type": "commitCount", "ref": "HEAD", "exclude": "main", "exact": 1 },
+      "hints": [
+        "Start the rebase over the last five commits: `git rebase -i HEAD~5`.",
+        "In the editor, leave the top line as `pick` and change the other four to `squash` (fold in, keep messages) or `fixup` (fold in, drop messages).",
+        "Save and close the todo. If prompted, write one clear combined message."
+      ]
+    },
+    {
+      "id": "work-kept",
+      "title": "The CSV export code survived the rewrite",
+      "check": { "type": "fileContains", "path": "api/src/export.ts", "pattern": "toCsv" },
+      "hints": [
+        "Squashing combines commits; it must not drop the actual code.",
+        "If `api/src/export.ts` is gone, you likely `drop`ped a line instead of `squash`ing it. `git rebase --abort` and start over.",
+        "After the rebase, `git show HEAD` should include the toCsv function."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You rewrote five scrappy work-in-progress commits into one clean commit with interactive rebase, turning a messy branch into a reviewable pull request.",
+    "internals": [
+      "`git rebase -i HEAD~5` detached HEAD at the commit five back and replayed the five commits one at a time according to your todo list.",
+      "`pick` replays a commit unchanged; `squash` replays it but melds its changes and message into the previous one; `fixup` is squash but discards the message.",
+      "Because the commits were replayed, every one got a new commit id — the originals are abandoned (still reachable via the reflog for a while).",
+      "The branch pointer now points at the single new commit; its tree is identical to the old branch tip, so no code was lost."
+    ],
+    "keyCommands": [
+      { "command": "git rebase -i <base>", "note": "Open the todo list for the commits after <base>." },
+      { "command": "pick / squash / fixup / reword / drop", "note": "The todo verbs: keep, fold-in, fold-in-silently, re-message, remove." },
+      { "command": "git rebase --abort", "note": "Bail out and restore the branch to before the rebase." }
+    ],
+    "commonMistakes": [
+      "Rebasing a branch others have already pulled — never rewrite shared history.",
+      "Deleting a todo line (that drops the commit) when you meant to squash it.",
+      "Marking the first commit as `squash` — there's nothing before it to fold into."
+    ],
+    "atWork": "Many teams expect a tidy, self-explanatory history on a pull request. Interactive rebase is how you get there: squash fixups, reorder, and reword before you ask for review.",
+    "interview": "\"How would you clean up a messy feature branch before review?\" Answer: interactive rebase — pick the first commit, squash or fixup the rest, reword to a clear message, and only do it on an unshared branch."
+  },
+  "solution": [
+    "git rebase -i HEAD~5"
+  ]
+}

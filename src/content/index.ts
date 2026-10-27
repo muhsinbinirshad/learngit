@@ -1,5 +1,6 @@
 import type { LabDefinition, LabMode, LessonDefinition, TrackDefinition, TrackItem } from '@/engine/scenario/types'
 import { validateLabDefinition } from '@/engine/scenario/validate'
+import { isPackName, loadPack } from './packs'
 import tracksJson from './tracks.json'
 import t1HelloGit from './labs/t1-hello-git.json'
 import t1FirstCommit from './labs/t1-first-commit.json'
@@ -14,6 +15,7 @@ import t2MergeConflict from './labs/t2-merge-conflict.json'
 import t2Stash from './labs/t2-stash.json'
 import t3Setup from './labs/t3-setup.json'
 import t3OpenPr from './labs/t3-open-pr.json'
+import t4RebaseClean from './labs/t4-rebase-clean.json'
 import t4CherryPick from './labs/t4-cherry-pick.json'
 import t5Reflog from './labs/t5-reflog.json'
 import t5Revert from './labs/t5-revert.json'
@@ -44,6 +46,7 @@ const rawLabs = [
   t2Stash,
   t3Setup,
   t3OpenPr,
+  t4RebaseClean,
   t4CherryPick,
   t5Reflog,
   t5Revert,
@@ -77,6 +80,19 @@ export const tracksById: Record<string, TrackDefinition> = Object.fromEntries(tr
 
 export function trackItems(trackId: string): TrackItem[] {
   return tracksById[trackId]?.items ?? []
+}
+
+/**
+ * Resolve a lab's `seed.packRef` (a pack name) into an inline `seed.pack` by loading the seed pack,
+ * so the engine seeder can start the repository from the Ledgerly snapshot. Labs without a packRef
+ * are returned unchanged. Call this before seedLab (the lab workspace and the content tests do).
+ */
+export async function resolveLabForSeed(lab: LabDefinition): Promise<LabDefinition> {
+  const ref = lab.seed.packRef
+  if (!ref) return lab
+  if (!isPackName(ref)) throw new Error(`lab ${lab.id}: unknown seed packRef "${ref}"`)
+  const pack = await loadPack(ref)
+  return { ...lab, seed: { ...lab.seed, pack } }
 }
 
 export function labsForTrack(trackId: string): LabDefinition[] {

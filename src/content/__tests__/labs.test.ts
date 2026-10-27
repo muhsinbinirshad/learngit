@@ -85,8 +85,13 @@ describe('lab content', () => {
     }
   })
 
-  // Only sandbox labs run end-to-end here; Real-mode labs validate against GitHub (see src/server tests).
-  for (const lab of labs.filter((l) => (l.mode ?? 'sandbox') === 'sandbox')) {
+  // Interactive-rebase labs are validated by resulting state (applyRebaseTodo), not by replaying a
+  // solution through the editor-driven shell; see rebase.test.ts.
+  const INTERACTIVE_LABS = new Set(['t4-rebase-clean'])
+
+  // Only sandbox, non-interactive labs run end-to-end here; Real-mode labs validate against GitHub
+  // (src/server tests) and interactive labs validate by state (rebase.test.ts).
+  for (const lab of labs.filter((l) => (l.mode ?? 'sandbox') === 'sandbox' && !INTERACTIVE_LABS.has(l.id))) {
     it(`${lab.id}: seeds, starts incomplete, and is completable with the reference solution`, async () => {
       const fs = createMemoryFs()
       const seeded = await seedLab(fs, lab, HOME)

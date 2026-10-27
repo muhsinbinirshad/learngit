@@ -203,6 +203,11 @@
           "required": [
             "pack"
           ]
+        },
+        {
+          "required": [
+            "packRef"
+          ]
         }
       ],
       "properties": {
@@ -217,6 +222,10 @@
         "pack": {
           "$ref": "#/$defs/seedPack",
           "description": "A repository snapshot (files + full history + refs) to load before any steps. Used by labs built on the Ledgerly codebase."
+        },
+        "packRef": {
+          "type": "string",
+          "description": "Name of a Ledgerly seed pack to load (resolved to `pack` by the content layer before seeding)."
         },
         "steps": {
           "type": "array",
