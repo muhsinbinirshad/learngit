@@ -1,0 +1,84 @@
+{
+  "id": "t6-hotfix",
+  "schemaVersion": 1,
+  "track": "team-workflows",
+  "order": 4,
+  "title": "Hotfix a release while main has unreleased work",
+  "estimatedMinutes": 15,
+  "difficulty": "advanced",
+  "skills": ["workflows", "branching", "releases"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, on call",
+    "brief": "Production is on `release/1.0`. A bug there needs fixing now — but you **cannot** just ship `main`: it has an unfinished discounts feature that isn't ready for customers.\n\nThe pattern is: fix on the release line, ship it, then carry the same fix forward to `main` so it isn't lost in the next release.\n\n**Steps.**\n\n1. Branch from the release: `git switch -c hotfix/tax release/1.0`.\n2. Fix `src/tax.js` (it should round the tax) and commit.\n3. Put the fix on the release line: `git switch release/1.0` then `git merge hotfix/tax`.\n4. Carry it to `main` without dragging the release's older state: `git switch main` then `git cherry-pick hotfix/tax`.\n\nAt the end, both `release/1.0` and `main` have the fix, and `main` still has its unreleased discounts work.",
+    "whyItMatters": "Real products always have a released line and an ahead-of-release `main`. Hotfixing means fixing where customers are, then forward-porting — without shipping half-done work and without losing the fix at the next release. It's a core on-call skill."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example" } },
+  "cast": { "luca": { "name": "Luca Rossi", "email": "luca.rossi@ledgerly.example", "role": "Engineer" } },
+  "seed": {
+    "startDate": "2026-05-04T09:00:00Z",
+    "steps": [
+      { "type": "commit", "message": "chore: add tax module", "files": { "src/tax.js": "function tax(total) {\n  return total * 0.075\n}\n\nmodule.exports = { tax }\n" } },
+      { "type": "commit", "message": "feat: add invoice totals", "files": { "src/invoice.js": "const { tax } = require('./tax')\nmodule.exports = { grandTotal: (s) => s + tax(s) }\n" } },
+      { "type": "branch", "name": "release/1.0", "from": "main" },
+      { "type": "tag", "name": "v1.0.0", "ref": "main", "message": "Ledgerly 1.0.0" },
+      { "type": "commit", "author": "luca", "message": "feat: WIP volume discounts (not for release)", "files": { "src/discounts.js": "module.exports = { volumeDiscount: (q) => (q > 100 ? 0.1 : 0) }\n" } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "release-fixed",
+      "title": "Fix landed on release/1.0",
+      "check": { "type": "fileContains", "ref": "release/1.0", "path": "src/tax.js", "pattern": "Math\\.round" },
+      "hints": [
+        "Branch from the release, not from main: `git switch -c hotfix/tax release/1.0`.",
+        "Make tax.js round (`Math.round(total * 0.075 * 100) / 100`), commit, then merge the hotfix into release/1.0.",
+        "`git switch release/1.0` then `git merge hotfix/tax`."
+      ]
+    },
+    {
+      "id": "main-fixed-work-intact",
+      "title": "Fix carried to main, with the unreleased work still there",
+      "description": "main has the rounding fix AND still has the WIP discounts.",
+      "check": { "type": "all", "checks": [
+        { "type": "fileContains", "ref": "main", "path": "src/tax.js", "pattern": "Math\\.round" },
+        { "type": "fileExists", "ref": "main", "path": "src/discounts.js" }
+      ] },
+      "hints": [
+        "Carry just the fix to main — don't merge the whole release line.",
+        "`git switch main` then `git cherry-pick hotfix/tax` applies the one fix commit on top of main's work.",
+        "Check `src/tax.js` on main rounds, and `src/discounts.js` is still present."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You fixed a bug on the released line, shipped it there, and forward-ported the same fix to main — without releasing main's unfinished work and without losing the fix.",
+    "internals": [
+      "Branching the hotfix from `release/1.0` meant the fix was built against what customers actually run, not against main's newer state.",
+      "Merging the hotfix into `release/1.0` fast-forwarded the release to include the fix, ready to ship as a patch.",
+      "Cherry-picking the hotfix commit onto `main` re-applied just that change, leaving main's unreleased discounts untouched.",
+      "Both lines now contain the fix; if you had only fixed the release, the next release from main would reintroduce the bug."
+    ],
+    "keyCommands": [
+      { "command": "git switch -c <hotfix> <release>", "note": "Branch the fix from the released line." },
+      { "command": "git merge <hotfix>", "note": "Land the fix on the release branch." },
+      { "command": "git cherry-pick <hotfix>", "note": "Forward-port the same fix onto main." }
+    ],
+    "commonMistakes": [
+      "Fixing on main and trying to ship main — which also ships unfinished work.",
+      "Fixing only the release and forgetting to forward-port, so the next release regresses.",
+      "Merging the whole release branch into main instead of cherry-picking the one fix."
+    ],
+    "atWork": "This is the standard hotfix flow for any project with a maintained release. Fix where customers are, ship, then forward-port, so the fix survives into the future.",
+    "interview": "\"Production is broken but main has unreleased work — how do you ship a fix?\" Answer: branch the fix from the release, merge and release it there, then cherry-pick it onto main."
+  },
+  "solution": [
+    "git switch -c hotfix/tax release/1.0",
+    "echo -e \"function tax(total) {\\n  return Math.round(total * 0.075 * 100) / 100\\n}\\n\\nmodule.exports = { tax }\" > src/tax.js",
+    "git commit -am \"fix: round tax to whole cents\"",
+    "git switch release/1.0",
+    "git merge hotfix/tax",
+    "git switch main",
+    "git cherry-pick hotfix/tax"
+  ]
+}
