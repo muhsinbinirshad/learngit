@@ -7,9 +7,11 @@ All notable changes to Commit Lab are recorded here. The format is based on
 ## [Unreleased]
 
 ### Added
-- Interactive-rebase lab that cleans the planted messy feature branch, validated by resulting repository state.
-- Real-mode team-workflow labs: landing a change under branch protection with green CI, and routing review through CODEOWNERS.
 - `seed.packRef` so labs can load Ledgerly seed packs by name, and `applyRebaseTodo` as the pure core behind the rebase editor.
+- Track 4: interactive-rebase cleanup of the planted messy branch, and a rebase-vs-merge decision lab.
+- Track 5: detached-HEAD recovery, bisecting a planted regression, and a leaked-secret incident lab (rotate, purge, force-with-lease).
+- Track 6: cutting a release, landing a change under branch protection with green CI, CODEOWNERS review routing, a release hotfix, and a GitHub Flow discipline lab.
+- Real-mode validation for Track 5–6 labs, each covered by passing and failing tests against an in-memory GitHub.
 
 ## [0.7.0] - 2026-10-27
 
