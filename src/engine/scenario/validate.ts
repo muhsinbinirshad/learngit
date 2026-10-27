@@ -63,9 +63,21 @@ export function validateLabDefinition(lab: unknown): string[] {
     'seed',
     'objectives',
     'debrief',
-    'solution',
   ] as (keyof LabDefinition)[])
     req(k)
+  const mode = l.mode ?? 'sandbox'
+  if (mode !== 'sandbox' && mode !== 'github') errors.push(`mode must be sandbox or github, got ${mode}`)
+  if (mode === 'github') {
+    // Real-mode labs run on GitHub: no in-browser solution, but they must tell the learner how to set up.
+    if (!l.realMode) errors.push('github labs need a realMode block (setup steps + clone commands)')
+    else {
+      if (!l.realMode.setup?.length) errors.push('realMode.setup must list at least one step')
+      if (!l.realMode.commands?.length) errors.push('realMode.commands must list at least one command')
+    }
+  } else {
+    if (!l.solution?.length) errors.push('solution must list at least one command')
+    if (l.realMode) errors.push('realMode is only for github labs')
+  }
   if (l.id && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(l.id)) errors.push('id must be kebab-case')
   if (l.schemaVersion !== 1) errors.push('schemaVersion must be 1')
   const ids = new Set<string>()
@@ -78,7 +90,6 @@ export function validateLabDefinition(lab: unknown): string[] {
     })
   }
   if (l.scenario && /lorem ipsum/i.test(l.scenario.brief)) errors.push('placeholder copy in brief')
-  if (!l.solution?.length) errors.push('solution must list at least one command')
   return errors
 }
 

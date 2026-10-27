@@ -3,6 +3,8 @@
  * mirror of that schema plus the declarative check language used by the validator.
  */
 
+import type { SeedPack } from './pack'
+
 export type Check =
   | { type: 'branchExists'; name: string }
   | { type: 'branchNotExists'; name: string }
@@ -98,6 +100,22 @@ export interface LabDebrief {
   interview?: string
 }
 
+/**
+ * Where a lab runs and how its objectives are checked.
+ * - `sandbox`: the in-browser Git engine (default). Checked by SandboxProvider against the local repo.
+ * - `github`: real GitHub ("Real mode"). No in-browser terminal; checked by GitHubProvider (Phase 5)
+ *   against live repository state via the GitHub API.
+ */
+export type LabMode = 'sandbox' | 'github'
+
+/** Authoring content the Mission panel shows for a Real-mode (github) lab. */
+export interface RealModeSetup {
+  /** Plain, ordered setup instructions shown before work begins. */
+  setup: string[]
+  /** Commands the learner copies into their own terminal; may contain a `{{repoUrl}}` placeholder. */
+  commands: string[]
+}
+
 export interface LabDefinition {
   /** Stable id, kebab-case, unique across all labs. */
   id: string
@@ -107,6 +125,10 @@ export interface LabDefinition {
   title: string
   estimatedMinutes: number
   difficulty: 'intro' | 'core' | 'advanced'
+  /** Lab mode (default `sandbox` when omitted). */
+  mode?: LabMode
+  /** Required for `github` labs: setup steps and clone commands shown in the Mission panel. */
+  realMode?: RealModeSetup
   skills: string[]
   scenario: {
     company: string
@@ -126,7 +148,13 @@ export interface LabDefinition {
     /** Starting timestamp for seeded commits (ISO date). Each step advances by `stepMinutes`. */
     startDate?: string
     stepMinutes?: number
-    steps: SeedStep[]
+    /**
+     * A snapshot to load the repository from (files + full history + refs). Labs built on the
+     * Ledgerly codebase use this instead of, or before, `steps`. When both are given, the pack
+     * loads first and `steps` run on top (e.g. to leave the repo mid-task).
+     */
+    pack?: SeedPack
+    steps?: SeedStep[]
   }
   objectives: Objective[]
   debrief: LabDebrief

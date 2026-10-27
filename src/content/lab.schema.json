@@ -17,10 +17,33 @@
     "workspace",
     "seed",
     "objectives",
-    "debrief",
-    "solution"
+    "debrief"
   ],
   "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "github"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "realMode"
+        ]
+      },
+      "else": {
+        "required": [
+          "solution"
+        ]
+      }
+    }
+  ],
   "properties": {
     "id": {
       "type": "string",
@@ -52,6 +75,41 @@
         "core",
         "advanced"
       ]
+    },
+    "mode": {
+      "enum": [
+        "sandbox",
+        "github"
+      ],
+      "default": "sandbox",
+      "description": "Where the lab runs. `sandbox` (default) uses the in-browser Git engine; `github` runs on real GitHub and is checked by the GitHubProvider (Phase 5)."
+    },
+    "realMode": {
+      "type": "object",
+      "required": [
+        "setup",
+        "commands"
+      ],
+      "additionalProperties": false,
+      "description": "Mission-panel content for a github (Real-mode) lab.",
+      "properties": {
+        "setup": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Ordered setup instructions shown before work begins."
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Copyable commands; may contain a {{repoUrl}} placeholder."
+        }
+      }
     },
     "skills": {
       "type": "array",
@@ -134,10 +192,19 @@
     },
     "seed": {
       "type": "object",
-      "required": [
-        "steps"
-      ],
       "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "steps"
+          ]
+        },
+        {
+          "required": [
+            "pack"
+          ]
+        }
+      ],
       "properties": {
         "startDate": {
           "type": "string",
@@ -146,6 +213,10 @@
         "stepMinutes": {
           "type": "integer",
           "minimum": 1
+        },
+        "pack": {
+          "$ref": "#/$defs/seedPack",
+          "description": "A repository snapshot (files + full history + refs) to load before any steps. Used by labs built on the Ledgerly codebase."
         },
         "steps": {
           "type": "array",
@@ -259,6 +330,76 @@
     }
   },
   "$defs": {
+    "seedPack": {
+      "type": "object",
+      "required": [
+        "version",
+        "files",
+        "manifest"
+      ],
+      "additionalProperties": false,
+      "description": "A serialized repository snapshot: working tree plus the whole .git (objects, refs, HEAD, index). Loading it reconstructs the repo exactly, preserving commit oids.",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "files": {
+          "type": "object",
+          "description": "Repo-relative path -> base64-encoded file bytes.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "manifest": {
+          "type": "object",
+          "required": [
+            "head",
+            "branch",
+            "refs"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "head": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "branch": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "refs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "oid"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "oid": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "persona": {
       "type": "object",
       "required": [
