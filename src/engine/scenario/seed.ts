@@ -11,6 +11,7 @@ import { stashPush } from '../git/stash'
 import { resetTo } from '../git/reset'
 import { initBareRemote, pushBranch } from '../git/remote'
 import { Shell } from '../shell/shell'
+import { loadSeedPack } from './pack'
 import type { LabDefinition, Persona, SeedStep } from './types'
 
 export const DEFAULT_IDENTITY: Persona = { name: 'Sam Okafor', email: 'sam.okafor@example.dev', role: 'Software Engineer' }
@@ -54,9 +55,13 @@ export async function seedLab(fs: FsClient, lab: LabDefinition, home: string): P
   await setGlobalConfig(fs, 'user.name', identity?.name ?? null)
   await setGlobalConfig(fs, 'user.email', identity?.email ?? null)
 
+  // A seed pack rebuilds the repository from a snapshot (files + history + refs). Its `steps`, if
+  // any, then run on top of the loaded repo — e.g. to leave uncommitted work or a half-done branch.
+  if (lab.seed.pack) await loadSeedPack(fs, repoDir, lab.seed.pack)
+
   const clock = new SeedClock(lab.seed.startDate ?? '2026-03-02T09:00:00Z', (lab.seed.stepMinutes ?? 37) * 60)
   const repo = new Repo(fs, repoDir, clock)
-  const labels: Record<string, string> = {}
+  const labels: Record<string, string> = { ...(lab.seed.pack?.manifest.labels ?? {}) }
   const cast = lab.cast ?? {}
   const learner = identity ?? DEFAULT_IDENTITY
 
@@ -77,7 +82,7 @@ export async function seedLab(fs: FsClient, lab: LabDefinition, home: string): P
     }
   }
 
-  for (const step of lab.seed.steps as SeedStep[]) {
+  for (const step of (lab.seed.steps ?? []) as SeedStep[]) {
     switch (step.type) {
       case 'file':
         await writeFileDeep(fs, `${repoDir}/${step.path}`, step.content)
