@@ -1,0 +1,21 @@
+{
+  "name": "Commit Lab Classroom",
+  "url": "https://commitlab.example",
+  "hook_attributes": {
+    "url": "https://commitlab.example/webhooks/github",
+    "active": true
+  },
+  "redirect_url": "https://commitlab.example/auth/github/callback",
+  "public": false,
+  "default_permissions": {
+    "contents": "write",
+    "pull_requests": "write",
+    "issues": "write",
+    "checks": "read",
+    "actions": "read",
+    "administration": "write",
+    "members": "write",
+    "metadata": "read"
+  },
+  "default_events": ["push", "pull_request", "pull_request_review", "issues", "issue_comment", "check_run", "release"]
+}
