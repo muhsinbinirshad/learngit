@@ -13,7 +13,8 @@
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "ledgerly:build": "node scripts/ledgerly/build.mjs"
   },
   "dependencies": {
     "@isomorphic-git/lightning-fs": "^4.10.3",
