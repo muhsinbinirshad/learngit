@@ -147,7 +147,8 @@
       { "type": "lab", "id": "t5-reflog" },
       { "type": "lab", "id": "t5-revert" },
       { "type": "lab", "id": "t5-detached-head" },
-      { "type": "lab", "id": "t5-bisect" }
+      { "type": "lab", "id": "t5-bisect" },
+      { "type": "lab", "id": "t5-leaked-key" }
     ]
   },
   {

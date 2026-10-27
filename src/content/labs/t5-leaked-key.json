@@ -1,0 +1,59 @@
+{
+  "id": "t5-leaked-key",
+  "schemaVersion": 1,
+  "track": "recovery",
+  "order": 5,
+  "title": "A secret was committed: rotate, purge, force-push",
+  "estimatedMinutes": 30,
+  "difficulty": "advanced",
+  "mode": "github",
+  "skills": ["recovery", "workflows"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, incident response",
+    "brief": "**The incident.** A payment API key was committed to `api/src/config.ts` a few commits back. Someone already removed it in a later commit — but that does nothing: the key is still sitting in the git history, readable by anyone who clones the repo. It must be treated as compromised.\n\nDo the real incident drill, in order:\n\n1. **Rotate first.** A key in history is burned. Revoke it at the provider and issue a new one, injected via the environment — never recommit it. (Nothing to validate here; it's the most important step.)\n2. **Purge it from history.** Rewrite history so no commit contains the key — `git filter-repo --replace-text` (or the BFG). Every affected commit gets a new id.\n3. **Force-push, safely.** History changed, so a normal push is rejected. Push with `--force-with-lease`, which refuses if someone else pushed in the meantime — never a bare `--force`.\n4. **Write the incident note.** Open an issue recording what leaked, when, that it was rotated, and the purge.\n\nTell teammates to re-clone; their old copies still contain the key.",
+    "whyItMatters": "Leaked credentials are one of the most common real security incidents. The reflex that matters is the order: rotate first (purging a live key is pointless), then rewrite history, then force-push with lease so you don't clobber a teammate. This is exactly what a calm responder does."
+  },
+  "realMode": {
+    "setup": [
+      "Rotate the key at the provider and set the new one via the environment. Do not recommit it.",
+      "Purge the key from history: `git filter-repo --replace-text <(echo 'OLD_KEY==>REMOVED')` (or use the BFG). This rewrites commit ids.",
+      "Force-push with a lease: `git push --force-with-lease origin main`. If it's rejected because someone else pushed, fetch and re-run — never use a bare --force.",
+      "Open an issue as the incident note (what leaked, when, rotated, purged), and tell the team to re-clone.",
+      "Press Check my work once main's history is clean and the force-with-lease push has landed."
+    ],
+    "commands": [
+      "git filter-repo --replace-text replacements.txt",
+      "git push --force-with-lease origin main"
+    ]
+  },
+  "workspace": { "projectDir": "ledgerly" },
+  "seed": { "steps": [] },
+  "objectives": [
+    { "id": "purged", "title": "The key is gone from the entire history of main", "check": { "type": "branchExists", "name": "main" }, "hints": ["A later 'remove the key' commit is not enough — the key is still in the earlier commit.", "Rewrite history with git filter-repo --replace-text (or BFG) so no commit contains it.", "Verify with `git log -p | grep` — the key should appear nowhere."] },
+    { "id": "force-lease", "title": "You force-pushed with --force-with-lease", "check": { "type": "branchExists", "name": "main" }, "hints": ["Rewriting history means a normal push is rejected.", "Use `git push --force-with-lease origin main`, which refuses if someone else pushed since you fetched.", "Never a bare `git push --force` on a shared branch."] },
+    { "id": "rotated", "title": "Rotated the key and wrote the incident note", "check": { "type": "branchExists", "name": "main" }, "hints": ["Rotation happens at the provider; this is the step that actually stops the leak.", "Open an issue recording what leaked, when, that it was rotated, and that history was purged.", "Tell teammates to re-clone — their old clones still contain the key."] }
+  ],
+  "debrief": {
+    "summary": "You ran a credential-leak incident the professional way: rotated the key first, purged it from the entire git history, force-pushed with a lease, and recorded an incident note.",
+    "internals": [
+      "A commit is immutable, but history is a chain of commits you can rebuild. filter-repo/BFG replays every commit with the secret scrubbed, producing new commit ids for everything from the leak onward.",
+      "Because the ids changed, remote history diverged from yours — a normal push is refused. `--force-with-lease` overwrites the remote only if it still matches what you last fetched, so you can't silently clobber a teammate's push.",
+      "Rotation is the real fix: anyone who already cloned has the old key, and purging history cannot reach their disks. Purging limits future exposure; rotation stops the leak.",
+      "Everyone must re-clone or hard-reset: their local history still contains the secret and the old commit ids."
+    ],
+    "keyCommands": [
+      { "command": "git filter-repo --replace-text <file>", "note": "Rewrite history, replacing the secret in every commit." },
+      { "command": "git push --force-with-lease", "note": "Publish rewritten history without clobbering others' pushes." },
+      { "command": "git log -p | grep <fragment>", "note": "Confirm the secret appears in no commit." }
+    ],
+    "commonMistakes": [
+      "Just deleting the key in a new commit — it stays in history and is still compromised.",
+      "Purging but not rotating — the leaked key is already out; it must be revoked.",
+      "Using bare `--force`, which can silently overwrite a teammate's work; use `--force-with-lease`.",
+      "Forgetting to tell the team to re-clone, so the secret lives on in their clones."
+    ],
+    "atWork": "This is a standard security runbook. The ordering — rotate, purge, force-with-lease, communicate — is what separates a contained incident from a prolonged one.",
+    "interview": "\"A secret got committed. What do you do?\" Answer: rotate it immediately (assume compromised), purge it from history with filter-repo/BFG, force-push with lease, and have everyone re-clone."
+  }
+}
