@@ -20,6 +20,8 @@ import t4CherryPick from './labs/t4-cherry-pick.json'
 import t5Reflog from './labs/t5-reflog.json'
 import t5Revert from './labs/t5-revert.json'
 import t6Release from './labs/t6-release.json'
+import t6BranchProtection from './labs/t6-branch-protection.json'
+import t6Codeowners from './labs/t6-codeowners.json'
 import l0WhatIsGit from './lessons/l0-what-is-git.json'
 import l0CoreWords from './lessons/l0-core-words.json'
 import l0HowTeamsWork from './lessons/l0-how-teams-work.json'
@@ -51,6 +53,8 @@ const rawLabs = [
   t5Reflog,
   t5Revert,
   t6Release,
+  t6BranchProtection,
+  t6Codeowners,
 ] as unknown as LabDefinition[]
 const rawLessons = [
   l0WhatIsGit,

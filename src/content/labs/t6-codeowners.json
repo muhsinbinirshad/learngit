@@ -1,0 +1,47 @@
+{
+  "id": "t6-codeowners",
+  "schemaVersion": 1,
+  "track": "team-workflows",
+  "order": 3,
+  "title": "Route a review with CODEOWNERS",
+  "estimatedMinutes": 15,
+  "difficulty": "core",
+  "mode": "github",
+  "skills": ["workflows", "review", "collaboration"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "**The ticket.** You're changing the pricing module. Ledgerly's `CODEOWNERS` file says the backend team owns that code, so your pull request must be approved by one of them before it can merge — GitHub will request their review automatically.\n\nOpen a pull request that touches a file under the backend-owned path, let GitHub route the review to the code owners, get their approval, and merge.\n\n**The point:** CODEOWNERS makes sure the people who understand a piece of code are the ones who sign off on changes to it — without anyone having to remember to ask.",
+    "whyItMatters": "On a larger codebase, nobody can review everything. CODEOWNERS encodes who owns what and routes reviews automatically, so changes get looked at by the people with the most context. Understanding it is part of working on a mature repo."
+  },
+  "realMode": {
+    "setup": [
+      "Branch from main (e.g. `feat/pricing`) and change a file under the path CODEOWNERS routes to the backend team (e.g. the pricing module).",
+      "Open a pull request. GitHub automatically requests review from the matching code owners.",
+      "Once an owner approves, merge — and press Check my work."
+    ],
+    "commands": ["git switch -c feat/pricing", "git push -u origin feat/pricing"]
+  },
+  "workspace": { "projectDir": "ledgerly" },
+  "seed": { "steps": [] },
+  "objectives": [
+    { "id": "approved", "title": "A code owner approved the pull request", "check": { "type": "branchExists", "name": "main" }, "hints": ["Change a file the backend team owns in CODEOWNERS.", "GitHub requests the owners' review automatically — you don't pick reviewers by hand.", "Wait for an owner's approval."] },
+    { "id": "merged", "title": "Merge the pull request", "check": { "type": "branchExists", "name": "main" }, "hints": ["You can merge once a code owner approves.", "If no review is requested, check your change actually touches an owned path.", "Merge, then delete the branch."] }
+  ],
+  "debrief": {
+    "summary": "You opened a change to an owned area of the codebase, let CODEOWNERS route the review to the right team, and merged with their approval.",
+    "internals": [
+      "`CODEOWNERS` maps path patterns to owners (users or teams). GitHub reads it when a PR opens.",
+      "For any file your PR touches that matches a pattern, GitHub automatically requests review from the matching owners.",
+      "When required by branch protection, the PR can't merge until a matching code owner approves — not just anyone.",
+      "This keeps review authority with the people who own the code, automatically."
+    ],
+    "keyCommands": [
+      { "command": "gh pr create", "note": "Open a PR; owners are requested automatically from CODEOWNERS." },
+      { "command": "gh pr view", "note": "See requested reviewers and review state." }
+    ],
+    "commonMistakes": ["Assuming any approval counts when protection requires a code-owner approval.", "Touching no owned path and wondering why no review was requested.", "Editing CODEOWNERS casually — it changes who must approve across the repo."],
+    "atWork": "CODEOWNERS is how large repos scale review: the right people are pulled in automatically, so changes to critical areas always get expert eyes.",
+    "interview": "\"What does CODEOWNERS do?\" Answer: maps paths to owning users/teams and auto-requests (and, with protection, requires) their review on PRs touching those paths."
+  }
+}

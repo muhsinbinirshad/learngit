@@ -1,0 +1,50 @@
+{
+  "id": "t6-branch-protection",
+  "schemaVersion": 1,
+  "track": "team-workflows",
+  "order": 2,
+  "title": "Land a change under branch protection and CI",
+  "estimatedMinutes": 25,
+  "difficulty": "advanced",
+  "mode": "github",
+  "skills": ["workflows", "review", "collaboration"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "**The ticket.** `main` is protected: nothing lands without a passing CI check and an approving review. Your small fix needs to go in the right way — not by disabling the rules.\n\nYou'll open a pull request and hit two gates: the GitHub Actions check is red, and the branch can't merge without a review. Fix the actual cause of the failing check (read the logs), push again until CI is green, get a review, then merge.\n\n**The point:** branch protection is there to protect `main`. The professional move is to satisfy it, never to route around it.",
+    "whyItMatters": "On any serious team, `main` is protected and CI gates merges. Knowing how to read a failing check, fix the root cause, and land a change cleanly under those rules is day-to-day senior-engineer work."
+  },
+  "realMode": {
+    "setup": [
+      "Branch from main (e.g. `fix/ci`), make your change, and open a pull request into main.",
+      "The CI check will run. If it's red, open the check's logs, find the real cause, fix it, and push again — repeat until green.",
+      "Request review. When a reviewer approves and CI is green, merge.",
+      "Press Check my work once it's merged."
+    ],
+    "commands": ["git switch -c fix/ci", "git commit -am \"fix: address failing check\"", "git push -u origin fix/ci"]
+  },
+  "workspace": { "projectDir": "ledgerly" },
+  "seed": { "steps": [] },
+  "objectives": [
+    { "id": "ci-green", "title": "Make the CI check pass", "check": { "type": "branchExists", "name": "main" }, "hints": ["Read the failing check's logs — fix the cause, don't silence it.", "Push more commits to the same branch; the check re-runs.", "Never disable protection to force a merge."] },
+    { "id": "approved", "title": "Get an approving review", "check": { "type": "branchExists", "name": "main" }, "hints": ["Request review from a teammate.", "Address comments by pushing more commits.", "Protection requires at least one approval."] },
+    { "id": "merged", "title": "Merge the pull request", "check": { "type": "branchExists", "name": "main" }, "hints": ["Only once CI is green and it's approved.", "Use the merge button; protection lets it through now.", "The branch can be deleted after."] }
+  ],
+  "debrief": {
+    "summary": "You landed a change under branch protection the right way: you fixed the failing CI check at its source, earned a review, and merged — without weakening the rules that protect main.",
+    "internals": [
+      "Branch protection is a server-side rule on GitHub: it refuses a merge to main unless the required checks pass and the required reviews exist.",
+      "The CI check is a GitHub Actions workflow run; its conclusion (success/failure) is what protection gates on.",
+      "Pushing new commits to the PR branch re-triggers the workflow, so the fix and the re-check are one loop.",
+      "Nothing merged until both gates were green — the history on main stays trustworthy."
+    ],
+    "keyCommands": [
+      { "command": "git push", "note": "Push more commits to the PR branch to re-run CI." },
+      { "command": "gh pr checks", "note": "See the status of a PR's checks from the terminal." },
+      { "command": "gh pr merge", "note": "Merge once protection is satisfied." }
+    ],
+    "commonMistakes": ["Disabling or bypassing branch protection to force a merge.", "Silencing a failing test instead of fixing the cause.", "Force-pushing over teammates' commits on a shared branch."],
+    "atWork": "This is the normal shape of shipping on a protected repo: open, fix CI, get review, merge. Reviewers and CI are collaborators, not obstacles.",
+    "interview": "\"CI is failing on your PR and main is protected. What do you do?\" Answer: read the logs, fix the root cause, push, get review — never bypass protection."
+  }
+}

@@ -114,6 +114,40 @@ export const TEAM_LABS: RealModeLab[] = [
       { id: 'release', title: 'Publish a release for v1.5.0', check: { type: 'releaseExists', tag: 'v1.5.0' } },
     ],
   },
+  {
+    id: 't6-branch-protection',
+    title: 'Land a change under branch protection and green CI',
+    summary: 'main is protected: a pull request needs an approving review and a passing CI check before it can merge. Open a PR, get CI green, get it approved, and merge.',
+    requiresGithubAccount: true,
+    setup: [
+      'Branch from main (e.g. `fix/ci`), make your change, and open a pull request.',
+      'CI runs automatically. If the check is red, read the logs, fix the cause, and push again — do not try to bypass protection.',
+      'Request review; once a code owner approves and CI is green, merge the pull request.',
+    ],
+    commands: ['git switch -c fix/ci', 'git push -u origin fix/ci'],
+    objectives: [
+      { id: 'protected', title: 'main is protected (reviews required)', check: { type: 'branchProtectionEnabled', branch: 'main', minApprovals: 1 } },
+      { id: 'ci-green', title: 'CI is passing on your branch', check: { type: 'checkRunPassed', ref: 'refs/heads/fix/ci', name: 'CI' } },
+      { id: 'approved', title: 'The pull request is approved', check: { type: 'prHasApprovedReview', head: 'fix/ci' } },
+      { id: 'merged', title: 'The pull request is merged', check: { type: 'prMerged', head: 'fix/ci' } },
+    ],
+  },
+  {
+    id: 't6-codeowners',
+    title: 'Get the right review via CODEOWNERS',
+    summary: 'A CODEOWNERS file routes reviews: a change to the pricing module needs the backend owners’ approval. Open a PR touching pricing and get it approved and merged.',
+    requiresGithubAccount: true,
+    setup: [
+      'Branch from main (e.g. `feat/pricing`) and change a file under the path CODEOWNERS routes to the backend team.',
+      'Open a pull request. GitHub automatically requests review from the matching code owners.',
+      'Once an owner approves, merge.',
+    ],
+    commands: ['git switch -c feat/pricing', 'git push -u origin feat/pricing'],
+    objectives: [
+      { id: 'approved', title: 'A code owner approved the pull request', check: { type: 'prHasApprovedReview', head: 'feat/pricing' } },
+      { id: 'merged', title: 'The pull request is merged', check: { type: 'prMerged', head: 'feat/pricing' } },
+    ],
+  },
 ]
 
 const ALL_REAL_MODE_LABS = [...ONBOARDING_LABS, ...TEAM_LABS]

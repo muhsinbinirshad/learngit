@@ -154,7 +154,9 @@
     "tagline": "Cut a release on real GitHub; branch protection, hotfixes and code owners",
     "description": "Real-mode again. The workflows teams use to ship safely: cut a tagged release with notes, and (coming next) hotfix while main has unreleased work, merge under branch-protection rules, and route reviews with CODEOWNERS.",
     "items": [
-      { "type": "lab", "id": "t6-release" }
+      { "type": "lab", "id": "t6-release" },
+      { "type": "lab", "id": "t6-branch-protection" },
+      { "type": "lab", "id": "t6-codeowners" }
     ]
   },
   {
