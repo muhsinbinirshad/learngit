@@ -232,6 +232,22 @@ Settings has an export button and a delete-everything button. Nothing is sent an
 | Blank page behind a reverse proxy | Unknown paths must fall back to `/index.html` (see `docker/nginx.conf`) |
 | Fonts look different | Google Fonts is blocked; the UI falls back to system fonts and stays usable |
 
+## Project map
+
+Commit Lab is more than the browser app. See [docs/ROADMAP.md](docs/ROADMAP.md) for the full status.
+
+| Path | What it is |
+|------|------------|
+| `src/engine` | The in-browser Git engine: filesystem, Git, shell, validator, scenario runner, seed packs |
+| `src/content` | The course: tracks, lessons, labs (JSON), and the Ledgerly seed packs |
+| `src/server` | The Real-mode backend: GitHub App, encrypted tokens, webhooks, provisioning, validation, bots |
+| `ledgerly` | The runnable Ledgerly monorepo the course is set inside (`npm install && npm test`) |
+| `scripts/ledgerly` | The deterministic history generator (`pnpm ledgerly:build`) |
+
+The course spans Tracks 1–7: foundations and branching in the browser (sandbox), then real
+collaboration on GitHub (Real mode) — pull requests, releases, branch protection, CODEOWNERS and
+incident response. See [CONTRIBUTING.md](CONTRIBUTING.md) to add a lesson or lab.
+
 ## License
 
 MIT
