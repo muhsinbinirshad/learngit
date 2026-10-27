@@ -1,0 +1,9 @@
+# Default owner for everything in Commit Lab.
+* @muhsinbinirshad
+
+# Content and the course curriculum.
+/src/content/ @muhsinbinirshad
+
+# The Git engine and the Real-mode backend.
+/src/engine/ @muhsinbinirshad
+/src/server/ @muhsinbinirshad
