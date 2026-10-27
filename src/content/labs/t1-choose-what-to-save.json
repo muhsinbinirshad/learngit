@@ -8,8 +8,8 @@
   "difficulty": "intro",
   "skills": ["staging"],
   "scenario": {
-    "company": "Your own project",
-    "role": "Beginner",
+    "company": "Ledgerly",
+    "role": "New engineer, first week",
     "brief": "**Where you are.** You edited two files this morning. `recipe.md` has a finished fix (a missing ingredient). `notes.md` has half-written thoughts you are not ready to save.\n\n**The idea.** The staging area lets you save one change without the other. You add only the file you want; the other stays edited on disk but out of the commit.\n\n**What you'll do.**\n\n1. Run `git status`. Both files show as modified.\n2. Run `git diff recipe.md` to see the fix, and `git diff notes.md` to see the half-done thoughts.\n3. Stage only the recipe: `git add recipe.md`.\n4. Commit: `git commit -m \"Add missing salt to pancake recipe\"`.\n5. Run `git status` again. notes.md is still modified and unsaved. That is exactly right.\n\n**Good to know.** Later you will learn `git add -p`, which lets you pick single lines from inside one file. For now, picking whole files is enough.",
     "whyItMatters": "Teammates review commits one at a time. A commit that mixes a finished fix with half-done notes is hard to review and impossible to reuse. Choosing what goes in is a daily skill."
   },

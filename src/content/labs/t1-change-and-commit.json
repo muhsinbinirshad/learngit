@@ -8,8 +8,8 @@
   "difficulty": "intro",
   "skills": ["commits", "history"],
   "scenario": {
-    "company": "Your own project",
-    "role": "Beginner",
+    "company": "Ledgerly",
+    "role": "New engineer, first week",
     "brief": "**Where you are.** `notes.md` is saved in history and `todo.md` is still untracked. Time to make the normal daily loop: change something, look at what changed, save.\n\n**What you'll do.**\n\n1. Save `todo.md` too: `git add todo.md`, then `git commit -m \"Add to-do list\"`.\n2. Open `notes.md` in the editor (click it in the file tree, or type `code notes.md`) and add a line of your own at the end. Save with Ctrl+S.\n3. Ask Git what changed: `git diff`. Lines starting with `+` are new.\n4. Save the change: `git add notes.md` then `git commit -m \"...\"` with a message that says what you added.\n5. Look at `git log --oneline`. You should see three commits, newest at the top.\n\n**Tip.** `git status` and `git diff` never change anything. Run them as often as you like.\n\n**Words you'll meet.** *Diff*: the list of lines that changed. *Working tree*: the files as they are on disk right now, saved or not.",
     "whyItMatters": "Edit, check the diff, commit: this loop is most of an engineer's day. Reading a diff before committing is how you catch mistakes before anyone else sees them."
   },

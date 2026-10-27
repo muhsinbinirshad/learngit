@@ -35,9 +35,9 @@
   {
     "id": "foundations",
     "order": 2,
-    "title": "Foundations",
-    "tagline": "Your first repository, commits, choosing what to save, reading history, keeping junk out",
-    "description": "A small personal project, one idea at a time: create a repository, make commits, choose what each commit contains, read history, and keep secrets and generated files out.",
+    "title": "Your first days at Ledgerly",
+    "tagline": "Set up your machine, make your first saves, choose what to save, read history, keep secrets out",
+    "description": "You just joined Ledgerly, a small company that makes invoicing software. These are sandbox labs — everything runs here in your browser, nothing can break. One idea at a time: set up Git, save your work, pick what goes into each save, look back through history, and keep passwords and junk out of it.",
     "items": [
       {
         "type": "lab",
@@ -84,9 +84,9 @@
   {
     "id": "branching-merging",
     "order": 3,
-    "title": "Branching & Merging",
-    "tagline": "Branches, merge shapes, conflicts, switching context safely",
-    "description": "Work on a task without touching main, bring the work back together, resolve a conflict without losing anyone's intent, and park unfinished work when priorities change.",
+    "title": "Building a feature with the team",
+    "tagline": "Branches, combining work, conflicts with a teammate, parking work for an urgent fix",
+    "description": "Still in the sandbox. Ledgerly needs a new feature: letting customers export their invoices. You will build it on your own branch (a safe side copy), combine it back with everyone else's work, sort out a clash when you and a teammate change the same thing, and learn how to drop a task when something urgent comes in.",
     "items": [
       {
         "type": "lesson",
@@ -117,34 +117,44 @@
   {
     "id": "remotes-collaboration",
     "order": 4,
-    "title": "Remotes & Collaboration",
-    "tagline": "Clone, fetch, push, forks, pull requests, code review",
-    "description": "Share work through a hosted platform: integrate remote changes, recover from rejected pushes, contribute through forks and run a pull request end to end.",
-    "items": []
+    "title": "Working with the team on GitHub",
+    "tagline": "Share your work online, handle rejected pushes, open and respond to a pull request",
+    "description": "Now it gets real. Up to here everything ran in your browser. In this track you move to GitHub — the website teams actually use to share code. It starts with one sandbox warm-up, then switches to Real mode, where you work in a real repository we set up for you. Real-mode steps need a free GitHub account and run on your own computer or in a browser-based workspace; the setup lab walks you through it, step by step.",
+    "items": [
+      { "type": "lab", "id": "t3-setup" },
+      { "type": "lab", "id": "t3-open-pr" }
+    ]
   },
   {
     "id": "rewriting-history",
     "order": 5,
-    "title": "Rewriting History",
-    "tagline": "Amend, interactive rebase, rebase vs merge, cherry-pick",
-    "description": "Shape a branch into reviewable commits before opening a pull request, and learn the one rule that keeps rewriting safe.",
-    "items": []
+    "title": "Tidying history before you share it",
+    "tagline": "Cherry-pick a fix to a release, and the one rule that keeps rewriting safe",
+    "description": "Sometimes you need to reshape commits before anyone sees them, or copy one fix to another branch. This track covers the safe moves — starting with getting a single fix onto a shipped release — and the golden rule: only rewrite history that nobody else has.",
+    "items": [
+      { "type": "lab", "id": "t4-cherry-pick" }
+    ]
   },
   {
     "id": "recovery",
     "order": 6,
-    "title": "Recovery & Incident Response",
-    "tagline": "Reflog, revert, bisect, detached HEAD, leaked secrets",
-    "description": "Nothing committed is lost. Find it, undo it safely in production, and track down the commit that broke things.",
-    "items": []
+    "title": "When things go wrong",
+    "tagline": "Get back lost commits, and safely undo a bad change on a shared branch",
+    "description": "The reassuring track. Almost nothing you commit is ever truly lost — you just need to know where to look. Recover a commit you thought a reset destroyed, and undo a bad change on `main` the safe way, without breaking anyone else's copy.",
+    "items": [
+      { "type": "lab", "id": "t5-reflog" },
+      { "type": "lab", "id": "t5-revert" }
+    ]
   },
   {
     "id": "team-workflows",
     "order": 7,
-    "title": "Team Workflows at Scale",
-    "tagline": "Trunk-based, GitFlow, hotfixes, releases, protection rules",
-    "description": "Run the workflows real teams use: hotfix while main has unreleased work, cut releases, and work under branch protection and code owners.",
-    "items": []
+    "title": "How teams ship, at scale",
+    "tagline": "Cut a release on real GitHub; branch protection, hotfixes and code owners",
+    "description": "Real-mode again. The workflows teams use to ship safely: cut a tagged release with notes, and (coming next) hotfix while main has unreleased work, merge under branch-protection rules, and route reviews with CODEOWNERS.",
+    "items": [
+      { "type": "lab", "id": "t6-release" }
+    ]
   },
   {
     "id": "capstones",

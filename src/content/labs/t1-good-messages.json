@@ -8,8 +8,8 @@
   "difficulty": "intro",
   "skills": ["commits"],
   "scenario": {
-    "company": "Your own project",
-    "role": "Beginner",
+    "company": "Ledgerly",
+    "role": "New engineer, first week",
     "brief": "**Where you are.** Your friend Priya looked at your history and said the last message, `stuff`, tells her nothing. She is right. You will fix it, then write a proper message for a new change.\n\n**The rules teams use.** A good message has a short first line, like a headline, written as an instruction: \"Add salt to recipe\", not \"added salt\" or \"salt.\" Keep it under 50 characters if you can, never over 72, and do not end it with a full stop. If you need to explain *why*, leave one empty line and write a sentence or two after it.\n\n**What you'll do.**\n\n1. Look at the bad message: `git log --oneline`.\n2. Replace the latest message without changing the files: `git commit --amend -m \"Add cooking time to pancake recipe\"`. Amend means \"rewrite the latest commit\".\n3. Make a new change: open `recipe.md`, add a line `Serves: 2`, save.\n4. Commit it with a headline **and** a body. Type `git commit -am \"Add serving size to recipe\" -m \"Priya asked how many people the recipe feeds.\"` The first `-m` is the headline, the second becomes the body after a blank line.\n5. Check with `git log`. Two tidy messages at the top.",
     "whyItMatters": "Six months from now, a message is often the only explanation of why a line exists. Teams reject pull requests with messages like \"fix\" or \"stuff\"."
   },

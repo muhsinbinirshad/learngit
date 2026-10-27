@@ -8,8 +8,8 @@
   "difficulty": "intro",
   "skills": ["history"],
   "scenario": {
-    "company": "Your own project",
-    "role": "Beginner",
+    "company": "Ledgerly",
+    "role": "New engineer, first week",
     "brief": "**Where you are.** Priya has been helping with `my-notes`. The recipe now says the oven should be at 220 degrees. You remember writing 180. Who changed it, and why? History knows.\n\n**Three ways to read history.**\n\n- `git log --oneline` lists every commit: short id and headline.\n- `git blame recipe.md` shows, for every line in the file, which commit last changed it and who made it.\n- `git show <id>` shows one commit in full: author, message, and the exact lines changed. Use the short id from blame or log.\n\n**What you'll do.** Open `ANSWERS.md` and fill in the three lines. Every answer is in the history, not in your memory.\n\n1. The short id of the commit that changed the temperature to 220.\n2. The name of the person who made it.\n3. The reason given in that commit's message.\n\nThen save your answers to history: `git add ANSWERS.md` and commit.",
     "whyItMatters": "Every engineer spends time asking \"why is this line here?\". Blame and show turn that question into a thirty-second lookup instead of a guess."
   },

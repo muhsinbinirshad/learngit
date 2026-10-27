@@ -8,8 +8,8 @@
   "difficulty": "intro",
   "skills": ["hygiene"],
   "scenario": {
-    "company": "Your own project",
-    "role": "Beginner",
+    "company": "Ledgerly",
+    "role": "New engineer, first week",
     "brief": "**Where you are.** `my-notes` grew into a tiny website. Two things are in the folder that should never be saved in history: a file called `.env` holding a password, and a `build/` folder full of generated files that can be recreated any time. Priya already committed both by accident. Oops.\n\n**Two separate problems.**\n\n- Git must stop *suggesting* them. A file named `.gitignore` lists names Git should ignore. One name per line; folders end with a slash.\n- Git must stop *tracking* the ones already saved. `.gitignore` does not touch files that are already in history. `git rm --cached <file>` removes a file from Git's list but keeps it on your disk. For a folder add `-r`.\n\n**What you'll do.**\n\n1. Create `.gitignore` with two lines: `.env` and `build/`. Quick way: `echo -e \".env\\nbuild/\" > .gitignore`\n2. Untrack what was already committed: `git rm --cached .env` and `git rm -r --cached build`.\n3. Run `git status`. The ignored files are gone from the list; `.gitignore` is new.\n4. Commit: `git add .gitignore` then `git commit -m \"Ignore the env file and build output\"`.\n5. Check `ls -a`: `.env` is still on disk. Good.\n\n**Note for later.** The password is still inside the *old* commits. Real teams change the password immediately; removing it from old history is a later lesson.",
     "whyItMatters": "Leaked passwords and committed build output are the two most common beginner mistakes in real repositories. Knowing the difference between \"stop tracking\" and \"delete\" keeps you from breaking your own setup while fixing it."
   },

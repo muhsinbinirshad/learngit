@@ -8,22 +8,22 @@
   "difficulty": "core",
   "skills": ["stash", "branching"],
   "scenario": {
-    "company": "Kestrel Commerce",
-    "role": "Software Engineer, Storefront team",
+    "company": "Ledgerly",
+    "role": "Engineer, reporting team",
     "brief": "You are halfway through a date-range filter for the sales report on `feature/report-filters`. `src/filters.js` has an unfinished `byDateRange` function with a TODO in it. It does not work yet and the team rule is clear: no half-finished code gets committed to a shared branch, because CI runs on every push.\n\nA customer-facing bug just came in with priority. `formatMonth` in `src/dates.js` prints the wrong month in every report header because `getUTCMonth()` is zero-based and nobody added one. The fix belongs on `main` today.\n\nPark your unfinished filter work safely, fix the bug on `main` with a focused commit (a short-lived `hotfix/...` branch merged into `main` is fine too), then return to `feature/report-filters` and restore your work exactly as it was, still uncommitted. Leave no stash entries behind.",
     "whyItMatters": "Context switches are constant in real teams. The stash lets you set work aside in seconds without committing something broken or losing it. Knowing when to stash versus when to commit a work-in-progress is a judgement every engineer makes weekly."
   },
-  "workspace": { "projectDir": "storefront" },
+  "workspace": { "projectDir": "ledgerly" },
   "cast": {
-    "priya": { "name": "Priya Natarajan", "email": "priya.natarajan@kestrel.shop", "role": "Staff Engineer" },
-    "mei": { "name": "Mei Lin", "email": "mei.lin@kestrel.shop", "role": "Engineer" }
+    "priya": { "name": "Priya Nair", "email": "priya.nair@ledgerly.example", "role": "Staff Engineer" },
+    "mei": { "name": "Mira Shah", "email": "mira.shah@ledgerly.example", "role": "Engineer" }
   },
   "seed": {
     "startDate": "2026-03-23T08:45:00Z",
     "stepMinutes": 140,
     "steps": [
       { "type": "commit", "author": "priya", "message": "Add sales report with month header", "files": {
-        "README.md": "# Storefront\n\nCustomer storefront and merchant reports for Kestrel Commerce.\n",
+        "README.md": "# Ledgerly\n\nInvoices and sales reports for Ledgerly customers.\n",
         "src/dates.js": "function formatMonth(date) {\n  const d = new Date(date)\n  const month = String(d.getUTCMonth()).padStart(2, '0')\n  return `${d.getUTCFullYear()}-${month}`\n}\n\nmodule.exports = { formatMonth }\n",
         "src/report.js": "const { formatMonth } = require('./dates')\nconst { byStatus } = require('./filters')\n\nfunction salesReport(orders, month) {\n  const paid = byStatus(orders, 'paid')\n  return { header: `Sales for ${formatMonth(month)}`, count: paid.length }\n}\n\nmodule.exports = { salesReport }\n",
         "src/filters.js": "function byStatus(orders, status) {\n  return orders.filter((o) => o.status === status)\n}\n\nmodule.exports = { byStatus }\n"

@@ -11,23 +11,23 @@
     "conflicts"
   ],
   "scenario": {
-    "company": "Brightwater Energy",
-    "role": "Backend Engineer, Billing team",
-    "brief": "Two changes to `applyDiscount` in `src/pricing.js` landed on different branches this week:\n\n- On `main`, Jonas made discounted totals round to cents so invoices stop showing values like `41.3299999`.\n- On `fix/discount-cap`, Mei fixed a policy bug: discounts above 50% were being honoured. Her change clamps the rate with `Math.min(discount, MAX_DISCOUNT)`.\n\nBoth changes are correct and both must survive. Merge `fix/discount-cap` into `main`. Git will stop with a conflict because both branches edited the same lines of the same function.\n\nResolve it so the final `applyDiscount` clamps the rate **and** rounds the result, remove every conflict marker, stage the file and complete the merge. The tests in `test/pricing.test.js` describe the expected behaviour if you want to check your resolution by reading.",
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "Two changes to `applyDiscount` in `src/pricing.js` landed on different branches this week:\n\n- On `main`, Luca made discounted totals round to cents so invoices stop showing values like `41.3299999`.\n- On `fix/discount-cap`, Priya fixed a policy bug: discounts above 50% were being honoured. Her change clamps the rate with `Math.min(discount, MAX_DISCOUNT)`.\n\nBoth changes are correct and both must survive. Merge `fix/discount-cap` into `main`. Git will stop with a conflict because both branches edited the same lines of the same function.\n\nResolve it so the final `applyDiscount` clamps the rate **and** rounds the result, remove every conflict marker, stage the file and complete the merge. The tests in `test/pricing.test.js` describe the expected behaviour if you want to check your resolution by reading.",
     "whyItMatters": "Conflicts are not errors; they are Git asking a human to make a decision it cannot make safely. Engineers who resolve conflicts calmly and correctly, keeping both intents, are the ones trusted to integrate other people's work."
   },
   "workspace": {
-    "projectDir": "billing-service"
+    "projectDir": "ledgerly"
   },
   "cast": {
     "mei": {
-      "name": "Mei Lin",
-      "email": "mei.lin@brightwater.energy",
+      "name": "Priya Nair",
+      "email": "priya.nair@ledgerly.example",
       "role": "Senior Engineer"
     },
     "jonas": {
-      "name": "Jonas Weber",
-      "email": "jonas.weber@brightwater.energy",
+      "name": "Luca Rossi",
+      "email": "luca.rossi@ledgerly.example",
       "role": "Engineer"
     }
   },
@@ -40,7 +40,7 @@
         "author": "mei",
         "message": "Scaffold billing service",
         "files": {
-          "README.md": "# Billing Service\n\nComputes invoice totals, discounts and taxes for Brightwater Energy customers.\n",
+          "README.md": "# Ledgerly\n\nComputes invoice totals, discounts and taxes for Ledgerly customers.\n",
           "src/pricing.js": "const MAX_DISCOUNT = 0.5\n\nfunction applyDiscount(total, discount) {\n  return total - total * discount\n}\n\nfunction addTax(total, taxRate) {\n  return total + total * taxRate\n}\n\nmodule.exports = { applyDiscount, addTax, MAX_DISCOUNT }\n",
           "test/pricing.test.js": "const test = require('node:test')\nconst assert = require('node:assert')\nconst { applyDiscount } = require('../src/pricing')\n\ntest('caps discount at 50%', () => {\n  assert.strictEqual(applyDiscount(100, 0.9), 50)\n})\n\ntest('rounds to cents', () => {\n  assert.strictEqual(applyDiscount(41.33, 0.1), 37.2)\n})\n"
         }
@@ -152,7 +152,7 @@
         ]
       },
       "hints": [
-        "Everything between `<<<<<<< HEAD` and `=======` is main's version; between `=======` and `>>>>>>> fix/discount-cap` is Mei's. You need a function that does both.",
+        "Everything between `<<<<<<< HEAD` and `=======` is main's version; between `=======` and `>>>>>>> fix/discount-cap` is Priya's. You need a function that does both.",
         "A correct body: compute `const rate = Math.min(discount, MAX_DISCOUNT)`, then `const discounted = total - total * rate`, then `return Math.round(discounted * 100) / 100`.",
         "In the editor use Accept Both and then edit so the three lines above appear once, in order. Remove any leftover duplicate return."
       ]

@@ -8,22 +8,22 @@
   "difficulty": "intro",
   "skills": ["branching", "commits"],
   "scenario": {
-    "company": "Harbor Analytics",
-    "role": "Full-stack Engineer, Insights team",
-    "brief": "Harbor's customers want to export dashboard data as CSV. The `insights-app` repository is shared by six engineers, and `main` deploys to production on every push, so nobody develops directly on it.\n\nThe team workflow: create a branch named after the feature, make small commits as you go, and only merge once the work is reviewed. Your branch for this work is `feature/csv-export`.\n\n- Create the branch from `main` and switch to it.\n- Add a new module `src/export/csv.js` that turns an array of row objects into CSV text (a header row from the object keys, then one line per row). Commit it.\n- Wire it into `src/index.js` so the module is exported alongside the existing helpers, and commit that separately.\n\n`main` must stay exactly where it is until the review is done. When you finish, your working tree should be clean.",
-    "whyItMatters": "Branches are cheap pointers, and that cheapness is what makes safe collaboration possible. Working in isolation means your half-finished export can never break production, and reviewers can see the whole change as a unit."
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "**The ticket.** Ledgerly customers want to download their invoices as a CSV file (the format spreadsheets open). You're going to build it.\n\n**The one team rule.** The app's code is shared by the whole team, and `main` is what customers actually use — so nobody changes `main` directly. Instead you work on a **branch**: a safe side copy, named after your feature. Here it's `feature/csv-export`. When it's reviewed, it gets merged in. Until then, `main` stays untouched.\n\n**Your steps.**\n\n- Create the branch `feature/csv-export` from `main` and switch onto it.\n- Add a small module `src/export/csv.js` that turns a list of rows into CSV text (a header row from the keys, then one line per row). Commit it.\n- Hook it into `src/index.js` so it's exported with the other helpers, and commit that as a second, separate commit.\n\nLeave `main` exactly where it is. When you're done, your working area should be clean (nothing left unsaved).",
+    "whyItMatters": "Branches are cheap, and that cheapness is what makes teamwork safe. Working on a branch means your half-finished export can never reach customers by accident, and a reviewer can look at the whole change as one unit."
   },
-  "workspace": { "projectDir": "insights-app" },
+  "workspace": { "projectDir": "ledgerly" },
   "cast": {
-    "ines": { "name": "Inés Castillo", "email": "ines.castillo@harboranalytics.io", "role": "Engineering Manager" },
-    "tomasz": { "name": "Tomasz Nowak", "email": "tomasz.nowak@harboranalytics.io", "role": "Senior Engineer" }
+    "ines": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example", "role": "Staff Engineer" },
+    "tomasz": { "name": "Kofi Mensah", "email": "kofi.mensah@ledgerly.example", "role": "Senior Engineer" }
   },
   "seed": {
     "startDate": "2026-03-09T09:00:00Z",
     "steps": [
-      { "type": "commit", "author": "ines", "message": "Create insights app skeleton", "files": {
-        "README.md": "# Insights App\n\nDashboards for Harbor Analytics customers.\n\n`main` deploys to production automatically. Develop on feature branches.\n",
-        "package.json": "{\n  \"name\": \"insights-app\",\n  \"version\": \"2.1.0\",\n  \"private\": true\n}\n",
+      { "type": "commit", "author": "ines", "message": "Create app skeleton", "files": {
+        "README.md": "# Ledgerly\n\nInvoicing for small teams.\n\n`main` is what customers use. Develop on feature branches.\n",
+        "package.json": "{\n  \"name\": \"ledgerly-app\",\n  \"version\": \"2.1.0\",\n  \"private\": true\n}\n",
         "src/index.js": "const { summarize } = require('./summarize')\nconst { formatDate } = require('./format')\n\nmodule.exports = { summarize, formatDate }\n",
         "src/summarize.js": "function summarize(rows, key) {\n  return rows.reduce((sum, row) => sum + Number(row[key] || 0), 0)\n}\n\nmodule.exports = { summarize }\n",
         "src/format.js": "function formatDate(date) {\n  return new Date(date).toISOString().slice(0, 10)\n}\n\nmodule.exports = { formatDate }\n"
@@ -32,7 +32,7 @@
         "src/summarize.js": "function summarize(rows, key) {\n  return rows.reduce((sum, row) => {\n    const value = Number(row[key])\n    return Number.isFinite(value) ? sum + value : sum\n  }, 0)\n}\n\nmodule.exports = { summarize }\n"
       } },
       { "type": "commit", "author": "ines", "message": "Add contributing notes about branch naming", "label": "start", "files": {
-        "README.md": "# Insights App\n\nDashboards for Harbor Analytics customers.\n\n`main` deploys to production automatically. Develop on feature branches.\n\n## Branch naming\n\n`feature/<short-name>`, `fix/<short-name>`, `chore/<short-name>`.\n"
+        "README.md": "# Ledgerly\n\nInvoicing for small teams.\n\n`main` is what customers use. Develop on feature branches.\n\n## Branch naming\n\n`feature/<short-name>`, `fix/<short-name>`, `chore/<short-name>`.\n"
       } }
     ]
   },

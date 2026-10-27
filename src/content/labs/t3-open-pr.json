@@ -1,0 +1,110 @@
+{
+  "id": "t3-open-pr",
+  "schemaVersion": 1,
+  "track": "remotes-collaboration",
+  "order": 2,
+  "title": "Open your first pull request",
+  "estimatedMinutes": 25,
+  "difficulty": "core",
+  "mode": "github",
+  "skills": ["remotes", "collaboration", "review"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer",
+    "brief": "**The ticket (ISSUE #1).** There's a typo in the project's README: it says \"Invocing\" instead of \"Invoicing\". Fix it.\n\nAt Ledgerly, nobody changes the shared code directly. You make your change on your own **branch** (a safe side copy), then open a **pull request** — a polite way of saying \"here is my change, please take a look before it goes in.\" A teammate reviews it, and once they're happy, it gets merged.\n\n**What you'll do.**\n\n1. Get a copy of the repo on your computer (`git clone`), using the link above.\n2. Make a branch for your fix: `git switch -c fix/readme-typo`.\n3. Fix the typo in `README.md`, save, commit, and push your branch.\n4. On GitHub, open a **pull request** into `main`. In the description, write `Closes #1` so it links the ticket.\n5. A teammate (**Mira**) will leave a review asking for a small change. Do what she asks, push again, and once she approves, press **Check my work**.\n\nDon't worry about getting it perfect first try — a pull request is a conversation, and going back and forth is normal.",
+    "whyItMatters": "This is how almost all professional software changes are made: a branch, a pull request, a review, then merge. Do this once and you understand 90% of daily teamwork on code."
+  },
+  "realMode": {
+    "setup": [
+      "Copy the repo to your computer with the clone command, then open the folder. (Or open it in a Codespace.)",
+      "Make a branch for your change so you never work directly on `main`.",
+      "Fix the typo in `README.md`, then commit and push your branch.",
+      "On GitHub, click **Compare & pull request**, set the base to `main`, and write `Closes #1` in the description.",
+      "Wait for Mira's review, make the change she asks for, push again, then come back and press **Check my work**."
+    ],
+    "commands": [
+      "git clone {{repoUrl}}",
+      "git switch -c fix/readme-typo",
+      "git add README.md",
+      "git commit -m \"docs: fix typo in README\"",
+      "git push -u origin fix/readme-typo"
+    ]
+  },
+  "workspace": { "projectDir": "ledgerly" },
+  "seed": { "steps": [] },
+  "objectives": [
+    {
+      "id": "branch",
+      "title": "Make a fix branch",
+      "description": "A branch named fix/readme-typo.",
+      "check": { "type": "branchExists", "name": "fix/readme-typo" },
+      "hints": [
+        "`git switch -c fix/readme-typo` makes the branch and moves you onto it.",
+        "The `-c` means 'create'. The name after it is yours to choose; we use fix/readme-typo.",
+        "Run it inside the cloned folder."
+      ]
+    },
+    {
+      "id": "commit",
+      "title": "Commit the typo fix",
+      "check": { "type": "branchExists", "name": "fix/readme-typo" },
+      "hints": [
+        "Open README.md, change 'Invocing' to 'Invoicing', and save.",
+        "Then `git add README.md` and `git commit -m \"docs: fix typo in README\"`.",
+        "Push it with `git push -u origin fix/readme-typo`."
+      ]
+    },
+    {
+      "id": "pr-open",
+      "title": "Open a pull request",
+      "check": { "type": "branchExists", "name": "fix/readme-typo" },
+      "hints": [
+        "After pushing, GitHub shows a 'Compare & pull request' button. Click it.",
+        "Set the base branch to `main`.",
+        "Give it a clear title, like 'Fix typo in README'."
+      ]
+    },
+    {
+      "id": "pr-issue",
+      "title": "Link the ticket",
+      "description": "Write 'Closes #1' in the pull request description.",
+      "check": { "type": "branchExists", "name": "fix/readme-typo" },
+      "hints": [
+        "In the PR description box, type `Closes #1`.",
+        "GitHub turns `Closes #1` into a link, and closes the ticket automatically when the PR merges.",
+        "You can edit the description after opening the PR if you forgot."
+      ]
+    },
+    {
+      "id": "pr-approved",
+      "title": "Get Mira's approval",
+      "check": { "type": "branchExists", "name": "fix/readme-typo" },
+      "hints": [
+        "Read Mira's review comment and do what it asks (usually a tiny tweak).",
+        "Commit and push again — the pull request updates itself, no need to open a new one.",
+        "When Mira approves, press 'Check my work'."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You made a change the professional way: on a branch, through a pull request, reviewed by a teammate, then merged. This is the core loop of working on a team.",
+    "internals": [
+      "A branch let you work without touching the shared main branch.",
+      "Pushing put your branch on GitHub so others could see it.",
+      "The pull request was the request to merge your branch into main, and the place the review happened.",
+      "'Closes #1' linked and will auto-close the ticket when merged."
+    ],
+    "keyCommands": [
+      { "command": "git switch -c fix/readme-typo", "note": "Make and switch to a new branch." },
+      { "command": "git push -u origin fix/readme-typo", "note": "Send your branch to GitHub the first time." },
+      { "command": "git commit -m \"...\"", "note": "Save your change with a short, clear message." }
+    ],
+    "commonMistakes": [
+      "Committing straight to main instead of a branch.",
+      "Forgetting to push, so the pull request has nothing in it.",
+      "Opening a brand-new PR after review instead of just pushing more commits to the same branch."
+    ],
+    "atWork": "This exact flow — branch, PR, review, merge — is how teams ship code every day. Once it's muscle memory, you're a productive teammate.",
+    "interview": "\"What is a pull request?\" Answer: a request to merge one branch into another, and the place teammates review the change before it lands."
+  }
+}

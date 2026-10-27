@@ -1,5 +1,6 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { itemsForTrack, tracks, tracksById, trackUnlock, completedIds, itemState, trackMinutes, labsById, SKILL_LABELS } from '@/content'
+import { itemsForTrack, tracks, tracksById, trackUnlock, completedIds, itemState, trackMinutes, trackModes, labsById, SKILL_LABELS } from '@/content'
+import type { LabMode } from '@/engine/scenario/types'
 import { useProgress } from '@/features/progress/store'
 import { Button, Chip, Eyebrow, Icon, ProgressBar } from '@/design-system/components'
 import { NotFoundPage } from '@/app/NotFoundPage'
@@ -16,6 +17,16 @@ export function TracksIndex() {
   const completed = completedIds(progress)
   const target = tracks.find((t) => trackUnlock(t.id, completed).unlocked && t.items.some((i) => !completed.has(i.id))) ?? tracks[0]!
   return <Navigate to={`/tracks/${target.id}`} replace />
+}
+
+/** Sandbox / Real GitHub badge. Real-mode labs run on real GitHub; sandbox labs run in the browser. */
+function ModeBadge({ mode, small }: { mode: LabMode; small?: boolean }) {
+  const github = mode === 'github'
+  return (
+    <Chip tone={github ? 'primary' : 'neutral'} icon={github ? 'cloud' : 'computer'} className={small ? 'h-5 text-[10px]' : undefined}>
+      {github ? 'Real GitHub' : 'Sandbox'}
+    </Chip>
+  )
 }
 
 export function TrackPage() {
@@ -82,6 +93,13 @@ export function TrackPage() {
             {labsCount ? `${labsCount} lab${labsCount === 1 ? '' : 's'}` : ''}
             {items.length ? ` · about ${trackMinutes(track.id)} min` : ''}
           </p>
+          {items.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {trackModes(track.id).map((m) => (
+                <ModeBadge key={m} mode={m} />
+              ))}
+            </div>
+          )}
         </div>
         <TrackCover trackId={track.id} size="lg" title={`${track.title} cover`} className="hidden sm:block" />
       </header>
@@ -145,6 +163,11 @@ export function TrackPage() {
                       <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-on-surface-variant">
                         {item.type === 'lesson' ? 'read' : `lab · ${lab?.objectives.length ?? 0} objectives`} · {item.estimatedMinutes} min
                       </p>
+                      {item.type === 'lab' && (
+                        <div className="mt-1.5">
+                          <ModeBadge mode={item.mode} small />
+                        </div>
+                      )}
                     </div>
                     {state === 'done' ? (
                       <Icon name="check_circle" size={18} className="text-success" filled />

@@ -1,0 +1,86 @@
+{
+  "id": "t3-setup",
+  "schemaVersion": 1,
+  "track": "remotes-collaboration",
+  "order": 1,
+  "title": "Get set up for real GitHub",
+  "estimatedMinutes": 20,
+  "difficulty": "intro",
+  "mode": "github",
+  "skills": ["remotes", "collaboration"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "New engineer, onboarding",
+    "brief": "**The ticket.** Welcome! Before you touch the real code, let's get your computer ready to talk to GitHub. GitHub is the website where the whole team keeps its code and works together.\n\nThis is the one lab where you set things up. Take it slowly — there is no rush, and nothing here can break.\n\n**What you'll do.** Three small things, in plain steps:\n\n1. Make sure **Git** is installed on your computer (or use a Codespace, which is GitHub in your browser with everything already installed — no setup at all).\n2. Tell Git your **name and email**, so your work has your name on it.\n3. **Connect to GitHub** so it knows pushes are really you.\n\nFollow the steps on the right. When each one works, tick it off. If you get stuck, every step has a hint.\n\n**Good to know.** You need a free GitHub account, and GitHub asks that you be at least 13. If you would rather not install anything, choose the Codespace option — it works entirely in your browser.",
+    "whyItMatters": "Every developer sets this up once on a new machine. It is not a hidden chore — it is the real first step of the job, and doing it once means every lab after this just works."
+  },
+  "realMode": {
+    "setup": [
+      "**Install Git** (or skip this by using a Codespace). Windows: install Git for Windows from git-scm.com. Mac: run `xcode-select --install`. Linux: `sudo apt install git`. Check it worked with the first command on the right — you should see a version number.",
+      "**Tell Git who you are.** Run the next two commands, but put your own name and the email you use for GitHub.",
+      "**Connect to GitHub.** The easiest way is the GitHub CLI: install it, then run `gh auth login` and follow the questions. Prefer keys? Create an SSH key and add it to GitHub → Settings → SSH keys.",
+      "**No computer setup?** Open your lab repository (link above), click the green **Code** button, then **Codespaces**, then **Create codespace**. You get a ready-to-go terminal in your browser."
+    ],
+    "commands": [
+      "git --version",
+      "git config --global user.name \"Your Name\"",
+      "git config --global user.email \"you@example.com\"",
+      "gh auth login"
+    ]
+  },
+  "workspace": { "projectDir": "ledgerly" },
+  "seed": { "steps": [] },
+  "objectives": [
+    {
+      "id": "git-ready",
+      "title": "Git is installed (or you opened a Codespace)",
+      "description": "Running git --version shows a version number.",
+      "check": { "type": "branchExists", "name": "main" },
+      "hints": [
+        "On your own computer, run `git --version`. If it prints a number, you're done.",
+        "No version number? Install Git from git-scm.com, or use a Codespace instead (no install needed).",
+        "Codespace route: open the repo → green Code button → Codespaces → Create codespace."
+      ]
+    },
+    {
+      "id": "identity-set",
+      "title": "Git knows your name and email",
+      "check": { "type": "branchExists", "name": "main" },
+      "hints": [
+        "Run the two `git config --global` commands on the right with your own details.",
+        "Use the same email as your GitHub account.",
+        "Check it any time with `git config --global --list`."
+      ]
+    },
+    {
+      "id": "connected",
+      "title": "You can reach GitHub",
+      "check": { "type": "branchExists", "name": "main" },
+      "hints": [
+        "Run `gh auth login` and follow the prompts, or set up an SSH key.",
+        "Test SSH with `ssh -T git@github.com` — you want a 'successfully authenticated' message.",
+        "In a Codespace you are already signed in; this step is automatically done."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "Your computer (or your Codespace) is now ready to work with GitHub: Git is installed, it knows your name, and it can prove pushes are you.",
+    "internals": [
+      "git --version confirms Git is on your machine.",
+      "git config --global saved your name and email once, for every project on this computer.",
+      "Signing in (gh auth login or an SSH key) is what lets GitHub accept your pushes securely."
+    ],
+    "keyCommands": [
+      { "command": "git --version", "note": "Check Git is installed." },
+      { "command": "git config --global user.name \"Your Name\"", "note": "Set your name once per computer." },
+      { "command": "gh auth login", "note": "Sign in to GitHub the easy way." }
+    ],
+    "commonMistakes": [
+      "Using a different email than your GitHub account.",
+      "Skipping sign-in and being surprised when a push is refused.",
+      "Thinking you must install things — a Codespace needs none of this."
+    ],
+    "atWork": "This is exactly what every engineer does on day one with a new laptop. You only do it once.",
+    "interview": "\"How does GitHub know a push is really you?\" Answer: you authenticate — with an SSH key or a signed-in credential — before you can push."
+  }
+}
