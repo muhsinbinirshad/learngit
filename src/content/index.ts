@@ -26,6 +26,7 @@ import t5LeakedKey from './labs/t5-leaked-key.json'
 import t6Release from './labs/t6-release.json'
 import t6BranchProtection from './labs/t6-branch-protection.json'
 import t6Codeowners from './labs/t6-codeowners.json'
+import t6Hotfix from './labs/t6-hotfix.json'
 import l0WhatIsGit from './lessons/l0-what-is-git.json'
 import l0CoreWords from './lessons/l0-core-words.json'
 import l0HowTeamsWork from './lessons/l0-how-teams-work.json'
@@ -63,6 +64,7 @@ const rawLabs = [
   t6Release,
   t6BranchProtection,
   t6Codeowners,
+  t6Hotfix,
 ] as unknown as LabDefinition[]
 const rawLessons = [
   l0WhatIsGit,
