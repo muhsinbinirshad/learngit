@@ -1,0 +1,82 @@
+{
+  "id": "t5-bisect",
+  "schemaVersion": 1,
+  "track": "recovery",
+  "order": 4,
+  "title": "Find the commit that broke it with bisect",
+  "estimatedMinutes": 15,
+  "difficulty": "advanced",
+  "skills": ["recovery", "history"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, on call",
+    "brief": "Invoices are showing unrounded tax again — `7.4999999` instead of `7.50`. It worked a week ago, somewhere in the last several commits it broke, and nobody remembers which change did it. Reading every diff by hand would take ages.\n\n`git bisect` finds the culprit by binary search. You tell it one commit that's **good** (the version from a week ago) and one that's **bad** (now). It checks out the midpoint; you test and tell it `good` or `bad`; it halves the range each time until one commit remains — the first bad commit.\n\n**Approach.**\n\n1. Start: `git bisect start HEAD HEAD~6` (HEAD is bad, HEAD~6 is the last known-good build).\n2. At each step Git checks out a commit. Look at `src/tax.js`: if it rounds (`Math.round`), it's `git bisect good`; if not, `git bisect bad`.\n3. When Git prints \"… is the first bad commit\", that's your culprit. Run `git bisect reset` to return, then write the bad commit's short id and the reason into `ANSWERS.md`.",
+    "whyItMatters": "On a long history, bisect turns \"when did this break?\" from an afternoon of guessing into a handful of tests — O(log n) instead of O(n). It's the fastest way to localize a regression, and knowing it is a mark of someone who debugs methodically."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example" } },
+  "cast": { "luca": { "name": "Luca Rossi", "email": "luca.rossi@ledgerly.example", "role": "Engineer" } },
+  "seed": {
+    "startDate": "2026-04-01T09:00:00Z",
+    "stepMinutes": 240,
+    "steps": [
+      { "type": "commit", "message": "chore: add tax module", "files": { "src/tax.js": "function tax(total) {\n  return Math.round(total * 0.075 * 100) / 100\n}\n\nmodule.exports = { tax }\n" } },
+      { "type": "commit", "message": "feat: add invoice totals", "files": { "src/invoice.js": "const { tax } = require('./tax')\nmodule.exports = { grandTotal: (s) => s + tax(s) }\n" } },
+      { "type": "commit", "message": "feat: add line items", "files": { "src/items.js": "module.exports = { lineTotal: (q, u) => q * u }\n" } },
+      { "type": "commit", "author": "luca", "message": "refactor: simplify tax calc", "label": "regression", "files": { "src/tax.js": "function tax(total) {\n  return total * 0.075\n}\n\nmodule.exports = { tax }\n" } },
+      { "type": "commit", "message": "feat: add CSV export", "files": { "src/export.js": "module.exports = { toCsv: (rows) => rows.join('\\n') }\n" } },
+      { "type": "commit", "message": "docs: expand readme", "files": { "README.md": "# Ledgerly\n\nInvoicing for small teams.\n" } },
+      { "type": "commit", "message": "feat: start PDF export", "files": { "src/pdf.js": "module.exports = { render: () => '' }\n" } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "recorded",
+      "title": "Record the first bad commit in ANSWERS.md",
+      "description": "Write the short id of the commit that dropped the rounding.",
+      "check": { "type": "fileContains", "path": "ANSWERS.md", "pattern": "{{label:regression:short}}" },
+      "hints": [
+        "Run the bisect: `git bisect start HEAD HEAD~6`, then mark each checked-out commit `good` (tax.js rounds) or `bad` (it doesn't).",
+        "When Git says \"… is the first bad commit\", copy that short id.",
+        "`git bisect reset`, then `echo \"Bad commit: <short id> — dropped Math.round\" > ANSWERS.md`."
+      ]
+    },
+    {
+      "id": "noted-why",
+      "title": "Note why it's the bug",
+      "check": { "type": "fileContains", "path": "ANSWERS.md", "pattern": "round", "flags": "i" },
+      "hints": [
+        "A good bisect finding says what the commit did wrong, not just its id.",
+        "The culprit removed the rounding from the tax calculation.",
+        "Add a short reason to ANSWERS.md, e.g. 'dropped Math.round from tax()'."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You localized a regression with git bisect — a binary search over history — instead of reading every commit, and recorded which change introduced it.",
+    "internals": [
+      "Bisect keeps a set of suspects: commits reachable from the bad commit but not from any good one.",
+      "Each `good`/`bad` you give halves that set; Git checks out the midpoint for you to test next.",
+      "When one suspect remains, it's reported as the first bad commit — the earliest commit where the bug is present.",
+      "Bisect checks commits out in a detached HEAD; `git bisect reset` returns you to where you started."
+    ],
+    "keyCommands": [
+      { "command": "git bisect start <bad> <good>", "note": "Begin; give a known-bad and known-good commit." },
+      { "command": "git bisect good / bad", "note": "Mark the currently checked-out commit." },
+      { "command": "git bisect reset", "note": "End the bisect and return to your branch." }
+    ],
+    "commonMistakes": [
+      "Swapping good and bad, so bisect reports a nonsense result.",
+      "Testing the wrong thing at each step — be consistent about what 'bad' means.",
+      "Forgetting `git bisect reset`, leaving yourself on a detached HEAD."
+    ],
+    "atWork": "When a regression slips in and the history is long, bisect is the professional reflex: pick a known-good point, a known-bad point, and let binary search find the commit in a few steps. With a scripted test, `git bisect run` automates even that.",
+    "interview": "\"How do you find which commit introduced a bug?\" Answer: git bisect — mark a good and bad commit and binary-search, testing the midpoint each step, until it names the first bad commit."
+  },
+  "solution": [
+    "git bisect start HEAD HEAD~6",
+    "git bisect good",
+    "git bisect bad",
+    "git bisect reset",
+    "echo \"Bad commit: {{label:regression:short}} — dropped Math.round from tax()\" > ANSWERS.md"
+  ]
+}

@@ -21,6 +21,7 @@ import t4CherryPick from './labs/t4-cherry-pick.json'
 import t5Reflog from './labs/t5-reflog.json'
 import t5Revert from './labs/t5-revert.json'
 import t5DetachedHead from './labs/t5-detached-head.json'
+import t5Bisect from './labs/t5-bisect.json'
 import t6Release from './labs/t6-release.json'
 import t6BranchProtection from './labs/t6-branch-protection.json'
 import t6Codeowners from './labs/t6-codeowners.json'
@@ -56,6 +57,7 @@ const rawLabs = [
   t5Reflog,
   t5Revert,
   t5DetachedHead,
+  t5Bisect,
   t6Release,
   t6BranchProtection,
   t6Codeowners,

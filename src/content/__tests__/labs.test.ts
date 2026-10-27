@@ -85,13 +85,14 @@ describe('lab content', () => {
     }
   })
 
-  // Interactive-rebase labs are validated by resulting state (applyRebaseTodo), not by replaying a
-  // solution through the editor-driven shell; see rebase.test.ts.
-  const INTERACTIVE_LABS = new Set(['t4-rebase-clean'])
+  // These labs are validated by resulting repository state in dedicated tests (interactive rebase via
+  // applyRebaseTodo in rebase.test.ts; bisect driven programmatically in bisect.test.ts) rather than by
+  // replaying a solution through the editor/prompt-driven shell.
+  const STATE_VALIDATED_LABS = new Set(['t4-rebase-clean', 't5-bisect'])
 
-  // Only sandbox, non-interactive labs run end-to-end here; Real-mode labs validate against GitHub
-  // (src/server tests) and interactive labs validate by state (rebase.test.ts).
-  for (const lab of labs.filter((l) => (l.mode ?? 'sandbox') === 'sandbox' && !INTERACTIVE_LABS.has(l.id))) {
+  // Only sandbox labs validated by solution-replay run here; Real-mode labs validate against GitHub
+  // (src/server tests) and the state-validated labs have their own tests.
+  for (const lab of labs.filter((l) => (l.mode ?? 'sandbox') === 'sandbox' && !STATE_VALIDATED_LABS.has(l.id))) {
     it(`${lab.id}: seeds, starts incomplete, and is completable with the reference solution`, async () => {
       const fs = createMemoryFs()
       const seeded = await seedLab(fs, lab, HOME)
