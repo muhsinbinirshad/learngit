@@ -1,0 +1,77 @@
+{
+  "id": "t5-detached-head",
+  "schemaVersion": 1,
+  "track": "recovery",
+  "order": 3,
+  "title": "Rescue work from a detached HEAD",
+  "estimatedMinutes": 10,
+  "difficulty": "core",
+  "skills": ["recovery", "branching"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "You checked out an old commit to reproduce a bug — which put you in **detached HEAD**: HEAD points straight at a commit instead of at a branch. You then committed a fix right there. Git is now warning that your new commit isn't on any branch, and if you switch away it could be garbage-collected later.\n\nThe commit itself is fine; it just needs a branch to hold it. Your job: get that commit onto a branch so it's safe and can be opened as a pull request.\n\n**Approach.** Create a branch at your current position — `git switch -c <name>` (or `git branch <name>`) — which both names this commit and attaches HEAD to the new branch. After that you're no longer detached, and the fix is preserved on a real branch.",
+    "whyItMatters": "Detached HEAD is one of Git's most confusing states, and the warning text frightens people into losing work. Understanding that a commit only needs a branch to point at it — and how to attach one — turns a scary message into a two-second fix."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example" } },
+  "seed": {
+    "startDate": "2026-04-20T09:00:00Z",
+    "steps": [
+      { "type": "commit", "message": "chore: scaffold tax module", "files": { "src/tax.js": "function tax(total) {\n  return total * 0.075\n}\n\nmodule.exports = { tax }\n" } },
+      { "type": "commit", "message": "feat: add invoice totals", "files": { "src/invoice.js": "const { tax } = require('./tax')\nfunction grandTotal(sub) {\n  return sub + tax(sub)\n}\n\nmodule.exports = { grandTotal }\n" } },
+      { "type": "commit", "message": "feat: add CSV export", "files": { "src/export.js": "function toCsv(rows) {\n  return rows.join('\\n')\n}\n\nmodule.exports = { toCsv }\n" } },
+      { "type": "checkout", "ref": "HEAD~2", "detach": true },
+      { "type": "commit", "message": "fix: round tax to whole cents", "label": "rescue", "files": { "src/tax.js": "function tax(total) {\n  return Math.round(total * 0.075 * 100) / 100\n}\n\nmodule.exports = { tax }\n" } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "attached",
+      "title": "Get off the detached HEAD onto a branch",
+      "check": { "type": "not", "check": { "type": "headDetached" } },
+      "hints": [
+        "`git status` says \"HEAD detached at …\". You need HEAD to point at a branch again.",
+        "`git switch -c <name>` creates a new branch at your current commit and moves you onto it.",
+        "Type: `git switch -c hotfix/tax-rounding`"
+      ]
+    },
+    {
+      "id": "preserved",
+      "title": "Keep the fix commit — it must be on your branch",
+      "description": "The rounding fix you committed while detached should now live on the branch you're on.",
+      "check": { "type": "all", "checks": [
+        { "type": "not", "check": { "type": "headDetached" } },
+        { "type": "refContains", "ref": "HEAD", "target": "label:rescue" }
+      ] },
+      "hints": [
+        "Creating the branch at your current position captures the fix commit automatically.",
+        "If you switched to main first, you left the detached commit behind — go back with `git switch -` (or the reflog) and branch from there instead.",
+        "After `git switch -c <name>`, `git log --oneline` should show the rounding fix on top."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You rescued a commit made on a detached HEAD by giving it a branch, so it's safe and shareable instead of dangling.",
+    "internals": [
+      "Detached HEAD means HEAD holds a commit id directly rather than a `ref: refs/heads/...`. Commits you make still happen — HEAD just moves forward with no branch following.",
+      "Such commits are reachable only via HEAD and the reflog; switching away leaves them unreferenced, and `git gc` removes them eventually.",
+      "`git switch -c <name>` wrote a new branch ref at the current commit and pointed HEAD at that branch — so the commit is now reachable from a ref and safe.",
+      "You could equally have run `git branch <name>` to name the commit without moving, then switched to it."
+    ],
+    "keyCommands": [
+      { "command": "git status", "note": "Tells you when HEAD is detached, and at which commit." },
+      { "command": "git switch -c <name>", "note": "Create a branch at HEAD and attach to it — the usual rescue." },
+      { "command": "git switch -", "note": "Jump back to the previous location if you switched away by mistake." }
+    ],
+    "commonMistakes": [
+      "Switching to main while detached and assuming the commit is gone (it's still in the reflog).",
+      "Thinking detached HEAD is an error — it's a valid state, just not where you want to keep new work.",
+      "Branching after you've already moved away, so the branch starts from the wrong commit."
+    ],
+    "atWork": "You land in detached HEAD whenever you check out a tag or an old commit to investigate. Knowing to branch before committing — or to branch immediately after — keeps investigative work from vanishing.",
+    "interview": "\"What is a detached HEAD and how do you save work from it?\" Answer: HEAD points at a commit, not a branch; create a branch at that commit (git switch -c / git branch) so the work is referenced and safe."
+  },
+  "solution": [
+    "git switch -c hotfix/tax-rounding"
+  ]
+}
