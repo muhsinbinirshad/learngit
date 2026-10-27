@@ -154,6 +154,11 @@ export interface LabDefinition {
      * loads first and `steps` run on top (e.g. to leave the repo mid-task).
      */
     pack?: SeedPack
+    /**
+     * Name of a Ledgerly seed pack to load (resolved to `pack` by the content layer before seeding;
+     * see resolveLabForSeed). Authors reference packs by name, e.g. "t5-bisect".
+     */
+    packRef?: string
     steps?: SeedStep[]
   }
   objectives: Objective[]

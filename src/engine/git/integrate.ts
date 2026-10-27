@@ -426,6 +426,31 @@ export async function rebase(repo: Repo, input: RebasePlanInput): Promise<Integr
   return runRebase(repo, rb, input.editMessage)
 }
 
+export interface RebaseTodoLine {
+  action: 'pick' | 'reword' | 'squash' | 'fixup' | 'drop'
+  /** Any revision the repo can resolve: short oid, HEAD~n, a branch, etc. */
+  ref: string
+}
+
+/**
+ * Apply a structured rebase todo list to the current branch and run it to completion. This is the
+ * pure core the interactive-rebase editor UI calls, and the one tests call directly — so a lab is
+ * validated by its resulting repository state, never by driving an editor. `message` supplies new
+ * commit messages for `reword`/`squash` (receives the default, returns the replacement or null).
+ */
+export async function applyRebaseTodo(
+  repo: Repo,
+  opts: { upstream: string; onto?: string; todo: RebaseTodoLine[]; message?: (initial: string) => Promise<string | null> },
+): Promise<IntegrateOutcome> {
+  return rebase(repo, {
+    upstream: opts.upstream,
+    onto: opts.onto,
+    interactive: true,
+    editTodo: async () => opts.todo.map((t) => `${t.action} ${t.ref}`).join('\n'),
+    editMessage: opts.message,
+  })
+}
+
 async function runRebase(repo: Repo, rb: RebaseState, editMessage?: (initial: string) => Promise<string | null>): Promise<IntegrateOutcome> {
   const lines: string[] = []
   while (rb.todo.length) {
