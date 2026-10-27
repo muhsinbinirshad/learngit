@@ -150,7 +150,27 @@ export const TEAM_LABS: RealModeLab[] = [
   },
 ]
 
-const ALL_REAL_MODE_LABS = [...ONBOARDING_LABS, ...TEAM_LABS]
+/** Track-5 Real-mode incident lab, validated against live GitHub state and recorded push events. */
+export const RECOVERY_LABS: RealModeLab[] = [
+  {
+    id: 't5-leaked-key',
+    title: 'A secret was committed: rotate, purge, force-push',
+    summary: 'Rotate a leaked key, purge it from the entire history with filter-repo, and force-push with a lease.',
+    requiresGithubAccount: true,
+    setup: [
+      'Rotate the key at the provider; never recommit it.',
+      'Purge it from history with `git filter-repo --replace-text` (or BFG) so no commit contains it.',
+      'Force-push the rewritten history with `git push --force-with-lease origin main`.',
+    ],
+    commands: ['git filter-repo --replace-text replacements.txt', 'git push --force-with-lease origin main'],
+    objectives: [
+      { id: 'purged', title: 'The key is gone from all of main’s history', check: { type: 'noSecretInHistory', branch: 'main', pattern: 'sk_live_' } },
+      { id: 'force-lease', title: 'Published with --force-with-lease', check: { type: 'forcePushUsedWithLease', branch: 'main' } },
+    ],
+  },
+]
+
+const ALL_REAL_MODE_LABS = [...ONBOARDING_LABS, ...TEAM_LABS, ...RECOVERY_LABS]
 
 export function getRealModeLab(id: string): RealModeLab | undefined {
   return ALL_REAL_MODE_LABS.find((l) => l.id === id)

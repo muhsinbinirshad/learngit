@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { FakeGitHub } from '../github/fakeClient'
-import { GitHubProvider } from '../validator/githubChecks'
-import { TEAM_LABS } from '../realmode/labs'
+import { GitHubProvider, type PushEvent } from '../validator/githubChecks'
+import { getRealModeLab } from '../realmode/labs'
 
 const OWNER = 'ledgerly-labs'
 
@@ -12,12 +12,12 @@ async function freshRepo(name: string) {
   return client
 }
 function lab(id: string) {
-  const l = TEAM_LABS.find((x) => x.id === id)
+  const l = getRealModeLab(id)
   if (!l) throw new Error(`no lab ${id}`)
   return l
 }
-async function evaluate(client: FakeGitHub, repo: string, id: string) {
-  const provider = new GitHubProvider({ client, owner: OWNER, repo })
+async function evaluate(client: FakeGitHub, repo: string, id: string, pushEvents?: PushEvent[]) {
+  const provider = new GitHubProvider({ client, owner: OWNER, repo, pushEvents })
   return provider.evaluate(lab(id).objectives)
 }
 const allMet = (rs: { met: boolean }[]) => rs.every((r) => r.met)
@@ -75,5 +75,25 @@ describe('t6-codeowners validates against GitHub state', () => {
     const rs = await evaluate(await arrange(false), 'co', 't6-codeowners')
     expect(allMet(rs)).toBe(false)
     expect(rs.find((r) => r.id === 'approved')?.met).toBe(false)
+  })
+})
+
+describe('t5-leaked-key validates against GitHub state', () => {
+  const leased: PushEvent[] = [{ branch: 'main', forced: true, withLease: true }]
+  it('passes when history is clean and main was force-pushed with a lease', async () => {
+    const c = await freshRepo('leak-ok') // template has no secret in history
+    expect(allMet(await evaluate(c, 'leak-ok', 't5-leaked-key', leased))).toBe(true)
+  })
+  it('fails when the secret is still in history', async () => {
+    const c = await freshRepo('leak-bad')
+    c.simulatePush({ owner: OWNER, repo: 'leak-bad', branch: 'main', message: 'add key', authorLogin: 'octo', files: { 'api/src/config.ts': "const k = 'sk_live_FAKE_123'\n" } })
+    const rs = await evaluate(c, 'leak-bad', 't5-leaked-key', leased)
+    expect(allMet(rs)).toBe(false)
+    expect(rs.find((r) => r.id === 'purged')?.met).toBe(false)
+  })
+  it('fails when the push was not force-with-lease', async () => {
+    const c = await freshRepo('leak-noforce')
+    const rs = await evaluate(c, 'leak-noforce', 't5-leaked-key', [{ branch: 'main', forced: true, withLease: false }])
+    expect(rs.find((r) => r.id === 'force-lease')?.met).toBe(false)
   })
 })
