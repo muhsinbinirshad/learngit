@@ -1,5 +1,7 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import type { LabDefinition } from '@/engine/scenario/types'
+import { createCheckProvider } from '@/engine/validator'
 import { labsById, tracksById, itemUnlock, completedIds } from '@/content'
 import { Navigate } from 'react-router-dom'
 import { NotFoundPage } from '@/app/NotFoundPage'
@@ -24,7 +26,45 @@ export function LabPage() {
   const lessonsProgress = useProgress((s) => s.lessons)
   if (!lab) return <NotFoundPage />
   if (!itemUnlock(lab.id, completedIds({ labs: labsProgress, lessons: lessonsProgress })).unlocked) return <Navigate to={`/tracks/${lab.track}`} replace />
-  return <LabWorkspace key={lab.id} labId={lab.id} />
+  // Real-mode labs run on GitHub: no in-browser engine, so a different, session-less workspace.
+  return lab.mode === 'github' ? <RealModeWorkspace key={lab.id} lab={lab} /> : <LabWorkspace key={lab.id} labId={lab.id} />
+}
+
+/**
+ * Workspace for a Real-mode (github) lab. There is no in-browser terminal; the Mission panel carries
+ * setup, the repo link and clone commands, and "Check my work" validates against GitHub through the
+ * GitHubProvider. Repo provisioning and live checking arrive with the Phase 5 backend; until then the
+ * check path is wired and reports that honestly rather than faking a pass.
+ */
+function RealModeWorkspace({ lab }: { lab: LabDefinition }) {
+  const [objectives, setObjectives] = useState<Record<string, boolean>>({})
+  const [checking, setChecking] = useState(false)
+  // Phase 5 provisions the repo and returns its URL; null means "not yet provisioned".
+  const repoUrl: string | null = null
+  const provider = useMemo(
+    () => createCheckProvider('github', { github: { owner: 'ledgerly-labs', repo: lab.id, repoUrl: repoUrl ?? '' } }),
+    [lab.id],
+  )
+
+  const onCheck = useCallback(async () => {
+    setChecking(true)
+    try {
+      const results = await provider.evaluate(lab.objectives)
+      setObjectives(Object.fromEntries(results.map((r) => [r.id, r.met])))
+    } catch (e) {
+      toast({ tone: 'info', title: 'Real-mode checking arrives in Phase 5', description: e instanceof Error ? e.message : String(e) })
+    } finally {
+      setChecking(false)
+    }
+  }, [provider, lab.objectives])
+
+  return (
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto h-full w-full max-w-2xl border-x border-outline">
+        <MissionPanel lab={lab} state={{ objectives }} realMode={{ repoUrl, checking, onCheck }} />
+      </div>
+    </div>
+  )
 }
 
 function LabWorkspace({ labId }: { labId: string }) {
