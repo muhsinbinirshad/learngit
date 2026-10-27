@@ -16,6 +16,7 @@ import t2Stash from './labs/t2-stash.json'
 import t3Setup from './labs/t3-setup.json'
 import t3OpenPr from './labs/t3-open-pr.json'
 import t4RebaseClean from './labs/t4-rebase-clean.json'
+import t4RebaseVsMerge from './labs/t4-rebase-vs-merge.json'
 import t4CherryPick from './labs/t4-cherry-pick.json'
 import t5Reflog from './labs/t5-reflog.json'
 import t5Revert from './labs/t5-revert.json'
@@ -50,6 +51,7 @@ const rawLabs = [
   t3Setup,
   t3OpenPr,
   t4RebaseClean,
+  t4RebaseVsMerge,
   t4CherryPick,
   t5Reflog,
   t5Revert,

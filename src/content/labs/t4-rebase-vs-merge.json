@@ -1,0 +1,85 @@
+{
+  "id": "t4-rebase-vs-merge",
+  "schemaVersion": 1,
+  "track": "rewriting-history",
+  "order": 2,
+  "title": "Rebase onto main to keep history linear",
+  "estimatedMinutes": 12,
+  "difficulty": "core",
+  "skills": ["rebasing", "merging", "history"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "Your `feature/csv` branch split from `main` a while ago, and `main` has since moved on (a teammate adjusted the tax rate). Before you open a pull request, you need your branch to sit on top of the latest `main`.\n\nYou have two options, and this is the decision the lab is about:\n\n- **Merge `main` into your branch** — easy, but it adds a merge commit and tangles the history.\n- **Rebase your branch onto `main`** — replays your commits on top of the latest `main`, keeping history **linear**.\n\nLedgerly's policy is a linear history on feature branches, so **rebase**. Your branch hasn't been shared, so rewriting it is safe.\n\n**Approach.** On your feature branch, run `git rebase main`. Git replays your commits onto the current tip of `main`. The two changes touch different files, so there's nothing to resolve. When you're done, your branch should contain everything on `main` and still be a straight line — no merge commit.",
+    "whyItMatters": "\"Rebase or merge?\" is a daily judgement call and a classic interview question. The mechanical difference is simple — rebase rewrites your commits onto a new base; merge records a join — but choosing the one that matches your team's history policy is what marks a fluent engineer."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example" } },
+  "cast": { "kofi": { "name": "Kofi Mensah", "email": "kofi.mensah@ledgerly.example", "role": "Senior Engineer" } },
+  "seed": {
+    "startDate": "2026-04-27T09:00:00Z",
+    "steps": [
+      { "type": "commit", "message": "chore: scaffold tax module", "files": { "src/tax.js": "function tax(total) {\n  return total * 0.075\n}\n\nmodule.exports = { tax }\n" } },
+      { "type": "commit", "message": "feat: add invoice totals", "files": { "src/invoice.js": "const { tax } = require('./tax')\nfunction grandTotal(sub) {\n  return sub + tax(sub)\n}\n\nmodule.exports = { grandTotal }\n" } },
+      { "type": "branch", "name": "feature/csv", "from": "main" },
+      { "type": "checkout", "ref": "feature/csv" },
+      { "type": "commit", "message": "feat: add CSV export", "files": { "src/export.js": "function toCsv(rows) {\n  return rows.map((r) => r.join(',')).join('\\n')\n}\n\nmodule.exports = { toCsv }\n" } },
+      { "type": "checkout", "ref": "main" },
+      { "type": "commit", "author": "kofi", "message": "fix: adjust tax rate to 8 percent", "files": { "src/tax.js": "function tax(total) {\n  return total * 0.08\n}\n\nmodule.exports = { tax }\n" } },
+      { "type": "checkout", "ref": "feature/csv" }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "rebased-linear",
+      "title": "Rebase your branch onto main, keeping history linear",
+      "description": "feature/csv should contain main's latest commit, with no merge commit.",
+      "check": { "type": "all", "checks": [
+        { "type": "refContains", "ref": "HEAD", "target": "main" },
+        { "type": "linearHistory", "ref": "HEAD" }
+      ] },
+      "hints": [
+        "Be on your feature branch (`git switch feature/csv`), then rebase onto the latest main.",
+        "`git rebase main` replays your commits on top of main. A `git merge main` instead would add a merge commit and fail the linear-history check.",
+        "Type: `git rebase main`"
+      ]
+    },
+    {
+      "id": "work-preserved",
+      "title": "Your CSV export is still there, on top of main's change",
+      "check": { "type": "all", "checks": [
+        { "type": "refContains", "ref": "HEAD", "target": "main" },
+        { "type": "fileContains", "path": "src/export.js", "pattern": "toCsv" },
+        { "type": "fileContains", "path": "src/tax.js", "pattern": "0\\.08" }
+      ] },
+      "hints": [
+        "After the rebase your branch has main's tax change AND your export commit.",
+        "Open `src/tax.js` (should be 0.08, from main) and `src/export.js` (your toCsv, replayed on top).",
+        "If export.js is missing you dropped it; `git reflog` and reset back, then rebase again."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You rebased your feature branch onto the latest main, producing a clean linear history with your work replayed on top — the right choice under a linear-history policy.",
+    "internals": [
+      "`git rebase main` found your branch's commits since it diverged, set your branch aside, moved to main's tip, and replayed each of your commits there as new commits (new ids).",
+      "The result is a straight line: main's history, then your commits — no merge commit joining two lines.",
+      "A `git merge main` would instead have created a two-parent merge commit, recording the divergence rather than erasing it. That fails the linear-history check here by design.",
+      "Rebase rewrites commits, so only do it on branches no one else has based work on."
+    ],
+    "keyCommands": [
+      { "command": "git rebase <base>", "note": "Replay the current branch's commits on top of <base>." },
+      { "command": "git merge <branch>", "note": "The alternative: record a join with a merge commit." },
+      { "command": "git log --oneline --graph", "note": "See whether history is a straight line or has a merge." }
+    ],
+    "commonMistakes": [
+      "Merging main into the feature branch when the team wants a linear history.",
+      "Rebasing a branch others have already based work on — that rewrites shared commits.",
+      "Panicking at a conflict mid-rebase instead of resolving and running `git rebase --continue`."
+    ],
+    "atWork": "Teams pick a convention — rebase for linear history, or merge to preserve the shape of integration. Knowing both, and which your repo expects, lets you keep a pull request clean and reviewable.",
+    "interview": "\"Rebase vs merge?\" Answer: rebase replays commits onto a new base for a linear history (rewrites ids, local branches only); merge records a join with a merge commit (safe on shared branches). Choose by your team's history policy."
+  },
+  "solution": [
+    "git rebase main"
+  ]
+}
