@@ -1,0 +1,75 @@
+{
+  "id": "t6-release",
+  "schemaVersion": 1,
+  "track": "team-workflows",
+  "order": 1,
+  "title": "Cut a release with a tag and notes",
+  "estimatedMinutes": 15,
+  "difficulty": "core",
+  "mode": "github",
+  "skills": ["releases", "workflows"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, release duty",
+    "brief": "**The ticket.** `main` is ready to ship as **v1.5.0**. Your job: mark this exact point in history as a release, so anyone can come back to it, and write short notes saying what changed.\n\nTwo pieces:\n\n1. A **tag** — a permanent name for this commit, like a bookmark: `v1.5.0`.\n2. A **release** on GitHub — the tag plus human-readable notes, shown on the repo's Releases page.\n\n**Your steps.** Make the tag, push it, then create the release on GitHub (or with the `gh` CLI) with a couple of lines of notes. When it's published, press **Check my work**.",
+    "whyItMatters": "Tags and releases are how a team says \"this exact code is version X.\" Support, rollbacks and changelogs all point at releases. Cutting one cleanly is a basic release-duty skill."
+  },
+  "realMode": {
+    "setup": [
+      "Make sure you're on an up-to-date `main`.",
+      "Create an annotated tag for the release and push it to GitHub.",
+      "On GitHub, open **Releases → Draft a new release**, choose the `v1.5.0` tag, add a title and a couple of lines of notes, and publish. (Or use the `gh release create` command.)",
+      "Come back and press **Check my work**."
+    ],
+    "commands": [
+      "git tag -a v1.5.0 -m \"Ledgerly 1.5.0\"",
+      "git push origin v1.5.0",
+      "gh release create v1.5.0 --title \"Ledgerly 1.5.0\" --notes \"Invoice PDF export and tax rounding fix.\""
+    ]
+  },
+  "workspace": { "projectDir": "ledgerly" },
+  "seed": { "steps": [] },
+  "objectives": [
+    {
+      "id": "tag",
+      "title": "Create and push the v1.5.0 tag",
+      "check": { "type": "branchExists", "name": "main" },
+      "hints": [
+        "`git tag -a v1.5.0 -m \"...\"` makes an annotated tag on your current commit.",
+        "Tags aren't pushed by default — send it with `git push origin v1.5.0`.",
+        "Check on GitHub: the tag should appear under the repo's tags."
+      ]
+    },
+    {
+      "id": "release",
+      "title": "Publish a GitHub release for v1.5.0 with notes",
+      "check": { "type": "branchExists", "name": "main" },
+      "hints": [
+        "A release wraps the tag with notes. Releases → Draft a new release → pick v1.5.0.",
+        "Add a short title and a line or two of notes, then Publish.",
+        "Or run `gh release create v1.5.0 --title \"...\" --notes \"...\"`."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You tagged an exact commit as v1.5.0 and published a release with notes — a permanent, shareable marker of this version.",
+    "internals": [
+      "A tag is a name that points at one commit and never moves, unlike a branch.",
+      "An annotated tag (`-a`) stores a message, author and date, so it carries release metadata.",
+      "A GitHub release is the tag plus human notes, listed on the Releases page and linkable from support tickets and changelogs.",
+      "Pushing the tag is a separate step from pushing commits — tags don't travel automatically."
+    ],
+    "keyCommands": [
+      { "command": "git tag -a v1.5.0 -m \"...\"", "note": "Create an annotated tag on the current commit." },
+      { "command": "git push origin v1.5.0", "note": "Push the tag to GitHub." },
+      { "command": "gh release create v1.5.0 --notes \"...\"", "note": "Publish a release from the command line." }
+    ],
+    "commonMistakes": [
+      "Forgetting to push the tag, so it exists only on your machine.",
+      "Tagging the wrong commit (check you're on the intended main).",
+      "Publishing a release with no notes — future-you won't remember what changed."
+    ],
+    "atWork": "Every shipped version at a company is a tag and usually a release. It's how rollbacks, support and changelogs all refer to 'what exactly is running'.",
+    "interview": "\"What's the difference between a branch and a tag?\" Answer: a branch moves as you commit; a tag is a fixed name for one commit, used to mark releases."
+  }
+}

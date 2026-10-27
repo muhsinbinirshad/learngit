@@ -1,0 +1,91 @@
+{
+  "id": "t4-cherry-pick",
+  "schemaVersion": 1,
+  "track": "rewriting-history",
+  "order": 3,
+  "title": "Put one fix onto the release branch",
+  "estimatedMinutes": 10,
+  "difficulty": "core",
+  "skills": ["rebasing", "releases"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "**The ticket.** Customers on the shipped version `release/1.4` are seeing tax amounts with too many decimals. You already fixed this on `main` — the commit *\"fix: round tax to whole cents\"*. But `main` has also moved on with a new discounts feature that is **not** ready for release.\n\nYou can't just merge `main` into `release/1.4` — that would drag the unfinished discounts along. You want **only that one fix**.\n\n**The tool for this is `git cherry-pick`.** It copies a single commit from one branch onto another.\n\n**Your steps.**\n\n1. Switch to the release branch: `git switch release/1.4`.\n2. Copy just the fix onto it: `git cherry-pick <the fix commit>`. (Its id is shown in the graph on the right, or use `git log main` to find it.)\n\nThat's it. The fix lands on `release/1.4`, and the unfinished discounts stay on `main`.",
+    "whyItMatters": "Real products have more than one living version. Cherry-pick is how teams get an urgent fix to customers on an old release without shipping half-finished work that happens to sit next to it on `main`."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example" } },
+  "cast": {
+    "ada": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example", "role": "Staff Engineer" },
+    "luca": { "name": "Luca Rossi", "email": "luca.rossi@ledgerly.example", "role": "Engineer" }
+  },
+  "seed": {
+    "startDate": "2026-02-02T09:00:00Z",
+    "steps": [
+      { "type": "commit", "author": "ada", "message": "chore: add pricing module", "files": {
+        "src/pricing.js": "function tax(total) {\n  return total * 0.075\n}\n\nmodule.exports = { tax }\n"
+      } },
+      { "type": "commit", "author": "ada", "message": "feat: add invoice line items", "files": {
+        "src/items.js": "function lineTotal(qty, unit) {\n  return qty * unit\n}\n\nmodule.exports = { lineTotal }\n"
+      } },
+      { "type": "branch", "name": "release/1.4", "from": "main" },
+      { "type": "commit", "author": "luca", "message": "feat: add volume discounts (WIP, not for release)", "files": {
+        "src/discount.js": "function volumeDiscount(qty) {\n  return qty > 100 ? 0.1 : 0\n}\n\nmodule.exports = { volumeDiscount }\n"
+      } },
+      { "type": "commit", "author": "ada", "message": "fix: round tax to whole cents", "label": "fix", "files": {
+        "src/pricing.js": "function tax(total) {\n  return Math.round(total * 0.075 * 100) / 100\n}\n\nmodule.exports = { tax }\n"
+      } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "on-release",
+      "title": "Switch to the release/1.4 branch",
+      "check": { "type": "headOnBranch", "name": "release/1.4" },
+      "sticky": false,
+      "hints": [
+        "Move onto the branch you want the fix to land on.",
+        "`git switch release/1.4` moves HEAD there. `git status` confirms the branch name.",
+        "Type: `git switch release/1.4`"
+      ]
+    },
+    {
+      "id": "fix-only",
+      "title": "Cherry-pick the tax fix — and only the fix",
+      "description": "release/1.4's pricing.js should round the tax, and the unfinished discounts must not come along.",
+      "check": { "type": "all", "checks": [
+        { "type": "fileContains", "ref": "release/1.4", "path": "src/pricing.js", "pattern": "Math\\.round" },
+        { "type": "fileNotExists", "path": "src/discount.js", "ref": "release/1.4" }
+      ] },
+      "hints": [
+        "Cherry-pick copies one commit by its id onto the current branch — exactly one, not everything on main.",
+        "Find the fix with `git log main --oneline` (look for \"round tax\"), then `git cherry-pick <that id>`.",
+        "Type: `git cherry-pick {{label:fix:short}}`. If `src/discount.js` appears on release/1.4, you picked too much."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You copied a single fix from main onto the live release branch with cherry-pick, leaving unfinished work behind.",
+    "internals": [
+      "`git cherry-pick <id>` took the change that commit introduced (the difference between it and its parent), and re-applied that same change on top of release/1.4 as a brand-new commit with a new id.",
+      "It is a copy, not a move: the original fix commit still sits on main, untouched.",
+      "Because release/1.4 had the old pricing.js and the fix only touched those lines, it applied cleanly with no conflict.",
+      "The discounts commit was never picked, so src/discount.js never reached the release branch."
+    ],
+    "keyCommands": [
+      { "command": "git switch <branch>", "note": "Move onto the branch that should receive the fix." },
+      { "command": "git cherry-pick <id>", "note": "Copy one commit onto the current branch." },
+      { "command": "git log <branch> --oneline", "note": "Find a commit's id." }
+    ],
+    "commonMistakes": [
+      "Merging main into the release branch and dragging unfinished work along.",
+      "Cherry-picking the wrong commit id.",
+      "Forgetting to switch branches first, so the fix lands back on main where it already is."
+    ],
+    "atWork": "Maintained software usually has a current release and a main branch that is ahead of it. Cherry-pick is the everyday tool for back-porting a fix to the release customers actually run.",
+    "interview": "\"How do you get one fix onto an old release without the rest of main?\" Answer: cherry-pick that single commit onto the release branch."
+  },
+  "solution": [
+    "git switch release/1.4",
+    "git cherry-pick {{label:fix}}"
+  ]
+}

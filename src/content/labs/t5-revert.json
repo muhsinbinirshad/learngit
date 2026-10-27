@@ -1,0 +1,83 @@
+{
+  "id": "t5-revert",
+  "schemaVersion": 1,
+  "track": "recovery",
+  "order": 2,
+  "title": "Undo a bad commit on a shared branch",
+  "estimatedMinutes": 8,
+  "difficulty": "core",
+  "skills": ["recovery", "history"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, on call",
+    "brief": "**The incident.** A commit on `main` — *\"perf: inline tax calc\"* — accidentally removed the rounding from the tax calculation, so invoices show amounts like `7.4999999`. CI went red and caught it. It needs to be undone, now.\n\n**The careful way.** `main` is shared — other people have already pulled it. So you must **not** rewrite history (that would break everyone else's copy). Instead you make a **new** commit that is the exact opposite of the bad one. That's what `git revert` does: it keeps the bad commit in the record, and adds an \"undo\" commit on top.\n\n**Your step.**\n\n- Revert the bad commit: `git revert <the bad commit>`. Git creates a new commit that puts the rounding back. (Its id is in the graph on the right, or `git log --oneline`.)\n\nThat's the whole fix. History stays honest — anyone can see both the mistake and the undo.",
+    "whyItMatters": "On a shared branch you never rewrite what others have pulled. Revert is the safe undo: it fixes the problem by moving forward, not by erasing the past, so nobody else's repository breaks."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example" } },
+  "cast": { "luca": { "name": "Luca Rossi", "email": "luca.rossi@ledgerly.example", "role": "Engineer" } },
+  "seed": {
+    "startDate": "2026-04-13T09:00:00Z",
+    "steps": [
+      { "type": "commit", "message": "chore: add tax module", "files": {
+        "src/tax.js": "function tax(total) {\n  return Math.round(total * 0.075 * 100) / 100\n}\n\nmodule.exports = { tax }\n"
+      } },
+      { "type": "commit", "message": "feat: add CSV export", "files": {
+        "src/export.js": "function toCsv(rows) {\n  return rows.join('\\n')\n}\n\nmodule.exports = { toCsv }\n"
+      } },
+      { "type": "commit", "author": "luca", "message": "perf: inline tax calc", "label": "bad", "files": {
+        "src/tax.js": "function tax(total) {\n  return total * 0.075\n}\n\nmodule.exports = { tax }\n"
+      } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "reverted",
+      "title": "Add a revert commit that undoes the bad change",
+      "description": "The newest commit should be a \"Revert\" of the bad one.",
+      "check": { "type": "commitMessageMatches", "ref": "HEAD", "which": "head", "pattern": "^Revert" },
+      "hints": [
+        "`git revert` makes a new commit that is the opposite of the one you name.",
+        "Find the bad commit's id with `git log --oneline` (look for \"inline tax calc\"), then revert it.",
+        "Type: `git revert {{label:bad:short}} --no-edit`"
+      ]
+    },
+    {
+      "id": "rounding-back",
+      "title": "The tax rounding is back, with history intact",
+      "description": "Math.round is restored, and the bad commit is still in history (reverted, not erased).",
+      "check": { "type": "all", "checks": [
+        { "type": "fileContains", "path": "src/tax.js", "pattern": "Math\\.round" },
+        { "type": "refContains", "ref": "main", "target": "label:bad" }
+      ] },
+      "hints": [
+        "Reverting the bad commit restores the rounding line it removed — and keeps the bad commit in history.",
+        "Open `src/tax.js` (Math.round back), and `git log --oneline` should still show the bad commit under the revert.",
+        "If the bad commit is gone, you rewrote history (e.g. reset) instead of reverting. Undo and use `git revert`."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You undid a bad commit on a shared branch the safe way — with a new revert commit — leaving history intact so nobody else's copy breaks.",
+    "internals": [
+      "`git revert <id>` computed the reverse of that commit's change (what it added, remove; what it removed, add back) and committed that as a new commit.",
+      "The bad commit stays in history; the revert sits on top of it. `git log` shows both.",
+      "Nothing was rewritten, so anyone who already pulled main stays in sync — they just pull one more commit.",
+      "Compare with reset: reset moves the branch pointer and rewrites history, which is only safe on a branch no one else has."
+    ],
+    "keyCommands": [
+      { "command": "git revert <id>", "note": "Make a new commit that undoes commit <id>." },
+      { "command": "git revert <id> --no-edit", "note": "Use the default revert message without opening an editor." },
+      { "command": "git log --oneline", "note": "See the bad commit and the revert together." }
+    ],
+    "commonMistakes": [
+      "Using reset --hard on a shared branch to 'remove' the bad commit, breaking everyone who already pulled it.",
+      "Reverting the wrong commit id.",
+      "Thinking revert deletes the mistake — it records an undo instead."
+    ],
+    "atWork": "When CI or a customer catches a bad change on main, revert is the standard, blameless fix: forward-only, safe for everyone, and easy to read in history later.",
+    "interview": "\"Difference between git revert and git reset?\" Answer: revert adds a new commit that undoes a change and keeps history (safe on shared branches); reset moves the branch pointer and rewrites history (only safe locally)."
+  },
+  "solution": [
+    "git revert {{label:bad}} --no-edit"
+  ]
+}

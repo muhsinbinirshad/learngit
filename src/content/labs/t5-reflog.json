@@ -1,0 +1,78 @@
+{
+  "id": "t5-reflog",
+  "schemaVersion": 1,
+  "track": "recovery",
+  "order": 1,
+  "title": "Get back a commit you thought you lost",
+  "estimatedMinutes": 8,
+  "difficulty": "core",
+  "skills": ["recovery", "history"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "**What just happened.** You were cleaning up and ran `git reset --hard` one time too many. Your last commit — *\"feat: finish invoice PDF\"* — has vanished from the branch. The files are gone from your folder too. It feels like your afternoon's work is gone.\n\n**It isn't.** Git almost never truly deletes a commit. For a while it keeps every commit your branch ever pointed at in a private diary called the **reflog** (\"reference log\"). Your lost commit is still in there.\n\n**Your steps.**\n\n1. Look at the diary: `git reflog`. Each line is a place HEAD used to be. You'll see your lost commit near the top, just before the reset.\n2. Move your branch back to it: `git reset --hard HEAD@{1}` (that means \"where HEAD was one step ago\"). Your commit — and its files — come right back.\n\nTake a breath. This is recoverable.",
+    "whyItMatters": "The scariest Git moment for beginners is thinking they destroyed work. Knowing the reflog turns panic into a thirty-second fix. Nothing you have committed is truly gone until Git's cleanup runs weeks later."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Priya Nair", "email": "priya.nair@ledgerly.example" } },
+  "seed": {
+    "startDate": "2026-04-06T09:00:00Z",
+    "steps": [
+      { "type": "commit", "message": "chore: scaffold invoice pdf module", "files": { "README.md": "# Ledgerly\n\nInvoice PDF generation.\n" } },
+      { "type": "commit", "message": "feat: lay out the pdf header", "files": { "src/pdf.js": "function header(invoice) {\n  return `Invoice ${invoice.id}`\n}\n\nmodule.exports = { header }\n" } },
+      { "type": "commit", "message": "feat: finish invoice PDF", "label": "lost", "files": { "src/pdf.js": "function header(invoice) {\n  return `Invoice ${invoice.id}`\n}\n\nfunction render(invoice) {\n  return [header(invoice), ...invoice.lines].join('\\n')\n}\n\nmodule.exports = { header, render }\n" } },
+      { "type": "reset", "mode": "hard", "ref": "HEAD~1" }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "recovered",
+      "title": "Move your branch back to the lost commit",
+      "description": "HEAD should point at \"feat: finish invoice PDF\" again.",
+      "check": { "type": "headEquals", "ref": "label:lost" },
+      "hints": [
+        "First see where HEAD has been: `git reflog`. The lost commit is the line just before the reset.",
+        "`HEAD@{1}` means 'where HEAD pointed one move ago' — that's your lost commit.",
+        "Type: `git reflog`, then `git reset --hard HEAD@{1}`"
+      ]
+    },
+    {
+      "id": "files-back",
+      "title": "Your finished work is back in the folder",
+      "description": "src/pdf.js should contain the render function again, with a clean working tree.",
+      "check": { "type": "all", "checks": [
+        { "type": "fileContains", "path": "src/pdf.js", "pattern": "function render" },
+        { "type": "workingTreeClean" }
+      ] },
+      "hints": [
+        "A hard reset to the recovered commit brings its files back into your folder too.",
+        "Check with `git status` (clean) and open `src/pdf.js` — the render function should be there.",
+        "If files are still missing, you recovered the wrong point; try `git reset --hard` to the lost commit's id from `git reflog`."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You recovered a commit that a hard reset had dropped, using the reflog — Git's record of everywhere your branch has been.",
+    "internals": [
+      "`git reset --hard HEAD~1` moved your branch pointer back one commit and made your folder match it. The old commit wasn't deleted — nothing pointed at it any more, so it looked gone.",
+      "Git records every move of HEAD in `.git/logs/HEAD` — the reflog. Your lost commit's id was still sitting there.",
+      "`HEAD@{1}` asked the reflog for the commit HEAD pointed at one move ago. `reset --hard` to it moved your branch back and restored the files.",
+      "Unreferenced commits are only removed much later by `git gc`, so you have a long window to recover."
+    ],
+    "keyCommands": [
+      { "command": "git reflog", "note": "Everywhere HEAD has been, newest first. The lifeline after a bad reset." },
+      { "command": "git reset --hard HEAD@{1}", "note": "Move the branch back to where HEAD was one step ago." },
+      { "command": "git reset --hard <id>", "note": "Move the branch to any commit id, e.g. one you found in the reflog." }
+    ],
+    "commonMistakes": [
+      "Assuming a hard reset deletes commits forever and giving up.",
+      "Reaching for the reflog too late is fine — but re-cloning or deleting the repo really does lose it.",
+      "Confusing HEAD@{1} (reflog position) with HEAD~1 (first parent)."
+    ],
+    "atWork": "Every engineer eventually resets, rebases or deletes a branch by mistake. The reflog is the first thing a calm teammate reaches for, and it has saved countless afternoons.",
+    "interview": "\"You ran git reset --hard and lost a commit. Now what?\" Answer: git reflog to find it, then reset --hard (or branch) to that id."
+  },
+  "solution": [
+    "git reflog",
+    "git reset --hard HEAD@{1}"
+  ]
+}
