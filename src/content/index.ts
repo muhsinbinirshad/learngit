@@ -1,4 +1,4 @@
-import type { LabDefinition, LessonDefinition, TrackDefinition, TrackItem } from '@/engine/scenario/types'
+import type { LabDefinition, LabMode, LessonDefinition, TrackDefinition, TrackItem } from '@/engine/scenario/types'
 import { validateLabDefinition } from '@/engine/scenario/validate'
 import tracksJson from './tracks.json'
 import t1HelloGit from './labs/t1-hello-git.json'
@@ -12,6 +12,12 @@ import t2FeatureBranch from './labs/t2-feature-branch.json'
 import t2MergeShapes from './labs/t2-merge-shapes.json'
 import t2MergeConflict from './labs/t2-merge-conflict.json'
 import t2Stash from './labs/t2-stash.json'
+import t3Setup from './labs/t3-setup.json'
+import t3OpenPr from './labs/t3-open-pr.json'
+import t4CherryPick from './labs/t4-cherry-pick.json'
+import t5Reflog from './labs/t5-reflog.json'
+import t5Revert from './labs/t5-revert.json'
+import t6Release from './labs/t6-release.json'
 import l0WhatIsGit from './lessons/l0-what-is-git.json'
 import l0CoreWords from './lessons/l0-core-words.json'
 import l0HowTeamsWork from './lessons/l0-how-teams-work.json'
@@ -36,6 +42,12 @@ const rawLabs = [
   t2MergeShapes,
   t2MergeConflict,
   t2Stash,
+  t3Setup,
+  t3OpenPr,
+  t4CherryPick,
+  t5Reflog,
+  t5Revert,
+  t6Release,
 ] as unknown as LabDefinition[]
 const rawLessons = [
   l0WhatIsGit,
@@ -88,17 +100,25 @@ export interface ResolvedItem {
   estimatedMinutes: number
   track: string
   href: string
+  /** Lab mode, for the Sandbox / Real GitHub badge. Lessons and sandbox labs are "sandbox". */
+  mode: LabMode
 }
 
 export function resolveItem(item: TrackItem): ResolvedItem | null {
   if (item.type === 'lab') {
     const lab = labsById[item.id]
-    return lab ? { type: 'lab', id: lab.id, title: lab.title, estimatedMinutes: lab.estimatedMinutes, track: lab.track, href: `/labs/${lab.id}` } : null
+    return lab ? { type: 'lab', id: lab.id, title: lab.title, estimatedMinutes: lab.estimatedMinutes, track: lab.track, href: `/labs/${lab.id}`, mode: lab.mode ?? 'sandbox' } : null
   }
   const lesson = lessonsById[item.id]
   return lesson
-    ? { type: 'lesson', id: lesson.id, title: lesson.title, estimatedMinutes: lesson.estimatedMinutes, track: lesson.track, href: `/lessons/${lesson.id}` }
+    ? { type: 'lesson', id: lesson.id, title: lesson.title, estimatedMinutes: lesson.estimatedMinutes, track: lesson.track, href: `/lessons/${lesson.id}`, mode: 'sandbox' }
     : null
+}
+
+/** The modes present in a track, for the track-level badge(s). */
+export function trackModes(trackId: string): LabMode[] {
+  const modes = new Set(itemsForTrack(trackId).map((i) => i.mode))
+  return (['sandbox', 'github'] as LabMode[]).filter((m) => modes.has(m))
 }
 
 export function itemsForTrack(trackId: string): ResolvedItem[] {

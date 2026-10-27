@@ -25,6 +25,7 @@ export function Wordmark({ compact }: { compact?: boolean }) {
 const NAV = [
   { to: '/', label: 'Home', icon: 'home', end: true },
   { to: '/tracks', label: 'Tracks', icon: 'route' },
+  { to: '/ledgerly', label: 'Ledgerly', icon: 'apartment' },
   { to: '/achievements', label: 'Achievements', icon: 'workspace_premium' },
   { to: '/hub', label: 'Hub', icon: 'hub' },
   { to: '/settings', label: 'Settings', icon: 'settings' },

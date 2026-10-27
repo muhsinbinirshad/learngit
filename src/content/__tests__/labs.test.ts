@@ -5,7 +5,7 @@ import { stripAnsi } from '@/engine/shell/format'
 import { seedLab } from '@/engine/scenario/seed'
 import { validateLabDefinition } from '@/engine/scenario/validate'
 import { applyStickiness, evaluateObjectives, interpolate } from '@/engine/validator'
-import { labs, lessons, tracks, labsById, lessonsById, allItems, itemsForTrack, trackUnlock, itemUnlock, completedIds } from '..'
+import { labs, lessons, tracks, labsById, lessonsById, allItems, itemsForTrack, trackUnlock, itemUnlock, completedIds, trackModes } from '..'
 import schema from '../lab.schema.json'
 
 const HOME = '/home/learner'
@@ -70,7 +70,23 @@ describe('lab content', () => {
     for (const lab of labs) for (const o of lab.objectives) walk(o.check)
   })
 
-  for (const lab of labs) {
+  it('track modes are reported for badges: Foundations is sandbox, Track 3 is Real GitHub', () => {
+    expect(trackModes('foundations')).toEqual(['sandbox'])
+    expect(trackModes('remotes-collaboration')).toEqual(['github'])
+  })
+
+  it('github (Real-mode) labs carry a realMode block and belong to a track', () => {
+    const githubLabs = labs.filter((l) => l.mode === 'github')
+    expect(githubLabs.length, 'has at least one Real-mode lab').toBeGreaterThan(0)
+    for (const lab of githubLabs) {
+      expect(lab.realMode?.setup.length, `${lab.id} setup`).toBeGreaterThan(0)
+      expect(lab.realMode?.commands.length, `${lab.id} commands`).toBeGreaterThan(0)
+      expect(lab.objectives.length, `${lab.id} objectives`).toBeGreaterThan(0)
+    }
+  })
+
+  // Only sandbox labs run end-to-end here; Real-mode labs validate against GitHub (see src/server tests).
+  for (const lab of labs.filter((l) => (l.mode ?? 'sandbox') === 'sandbox')) {
     it(`${lab.id}: seeds, starts incomplete, and is completable with the reference solution`, async () => {
       const fs = createMemoryFs()
       const seeded = await seedLab(fs, lab, HOME)

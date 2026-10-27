@@ -7,7 +7,9 @@ import { LessonPage } from '@/features/lessons/LessonPage'
 import { NotFoundPage } from './NotFoundPage'
 import { ToastViewport } from '@/design-system/components'
 import { LabPageSkeleton } from '@/features/lab/LabPageSkeleton'
-import { AchievementsPage, HubPage, SettingsPage } from '@/features/placeholders/PlaceholderPages'
+import { HubPage, SettingsPage } from '@/features/placeholders/PlaceholderPages'
+import { AchievementsPage } from '@/features/achievements/AchievementsPage'
+import { LedgerlyPage } from '@/features/ledgerly/LedgerlyPage'
 
 const DesignPage = lazy(() => import('@/features/design/DesignPage').then((m) => ({ default: m.DesignPage })))
 const LabPage = lazy(() => import('@/features/lab/LabPage').then((m) => ({ default: m.LabPage })))
@@ -20,6 +22,7 @@ const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/tracks', element: <TracksIndex /> },
       { path: '/tracks/:trackId', element: <TrackPage /> },
+      { path: '/ledgerly', element: <LedgerlyPage /> },
       { path: '/lessons/:lessonId', element: <LessonPage /> },
       { path: '/achievements', element: <AchievementsPage /> },
       { path: '/hub', element: <HubPage /> },

@@ -27,6 +27,9 @@ interface ProgressState {
   labs: Record<string, LabProgress>
   lessons: Record<string, LessonProgress>
   lastLabId: string | null
+  /** Real-mode badge ids earned on real GitHub, synced from the Phase 5 backend (see sync.ts). */
+  realModeBadges: string[]
+  setRealModeBadges: (ids: string[]) => void
   completeLesson: (lessonId: string) => void
   start: (labId: string) => void
   update: (labId: string, patch: Partial<LabProgress>) => void
@@ -56,6 +59,8 @@ export const useProgress = create<ProgressState>()(
       labs: {},
       lessons: {},
       lastLabId: null,
+      realModeBadges: [],
+      setRealModeBadges: (ids) => set({ realModeBadges: ids }),
       completeLesson: (lessonId) =>
         set((s) => ({ lessons: { ...s.lessons, [lessonId]: { status: 'completed', completedAt: s.lessons[lessonId]?.completedAt ?? Date.now() } } })),
       start: (labId) =>
