@@ -144,7 +144,8 @@
     "description": "The reassuring track. Almost nothing you commit is ever truly lost — you just need to know where to look. Recover a commit you thought a reset destroyed, and undo a bad change on `main` the safe way, without breaking anyone else's copy.",
     "items": [
       { "type": "lab", "id": "t5-reflog" },
-      { "type": "lab", "id": "t5-revert" }
+      { "type": "lab", "id": "t5-revert" },
+      { "type": "lab", "id": "t5-detached-head" }
     ]
   },
   {
