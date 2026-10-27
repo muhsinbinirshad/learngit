@@ -1,0 +1,80 @@
+{
+  "id": "t6-trunk-vs-flow",
+  "schemaVersion": 1,
+  "track": "team-workflows",
+  "order": 5,
+  "title": "GitHub Flow: short-lived branches, kept tidy",
+  "estimatedMinutes": 10,
+  "difficulty": "core",
+  "skills": ["workflows", "branching"],
+  "scenario": {
+    "company": "Ledgerly",
+    "role": "Engineer, invoicing team",
+    "brief": "Two common team models:\n\n- **Trunk-based development:** everyone commits to `main` in small, frequent increments; unfinished work hides behind feature flags. Few or no long-lived branches.\n- **GitHub Flow:** every change is a **short-lived** branch off `main`, merged through a pull request, then **deleted**. `main` is always deployable.\n\nLedgerly uses GitHub Flow, and the discipline that keeps it healthy is simple: branches are short-lived and cleaned up after merge — stale branches pile up and confuse everyone.\n\n**Practice the loop.**\n\n1. Branch for one small change: `git switch -c feat/receipts`.\n2. Make the change and commit it.\n3. Merge it into `main`: `git switch main` then `git merge feat/receipts`.\n4. Delete the now-merged branch: `git branch -d feat/receipts`.\n\nEnd with the change on `main` and no leftover branch.",
+    "whyItMatters": "Whichever model a team uses, the habit that matters is keeping `main` releasable and not leaving a graveyard of stale branches. The merge-then-delete loop is GitHub Flow in miniature, and it's the rhythm most teams you'll join actually work in."
+  },
+  "workspace": { "projectDir": "ledgerly", "identity": { "name": "Ada Reyes", "email": "ada.reyes@ledgerly.example" } },
+  "seed": {
+    "startDate": "2026-05-11T09:00:00Z",
+    "steps": [
+      { "type": "commit", "message": "chore: scaffold invoicing app", "files": { "README.md": "# Ledgerly\n\nInvoicing for small teams.\n", "src/index.js": "module.exports = {}\n" } },
+      { "type": "commit", "message": "feat: add invoice totals", "files": { "src/invoice.js": "module.exports = { grandTotal: (s) => s }\n" } }
+    ]
+  },
+  "objectives": [
+    {
+      "id": "on-main",
+      "title": "Merge the small change into main",
+      "check": { "type": "fileContains", "ref": "main", "path": "src/receipts.js", "pattern": "receipt" },
+      "hints": [
+        "Make the change on a short-lived branch, not on main directly.",
+        "`git switch -c feat/receipts`, add `src/receipts.js`, commit, then `git switch main` and `git merge feat/receipts`.",
+        "`git log main` should show your commit."
+      ]
+    },
+    {
+      "id": "cleaned-up",
+      "title": "Delete the merged branch (keep things tidy)",
+      "description": "The short-lived branch should be gone once it's merged.",
+      "check": { "type": "all", "checks": [
+        { "type": "branchNotExists", "name": "feat/receipts" },
+        { "type": "fileContains", "ref": "main", "path": "src/receipts.js", "pattern": "receipt" }
+      ] },
+      "hints": [
+        "A short-lived branch is deleted once merged — that's the discipline.",
+        "`git branch -d feat/receipts` deletes it (the lowercase -d refuses if it isn't merged, which is a safety check).",
+        "`git branch` should no longer list feat/receipts."
+      ]
+    }
+  ],
+  "debrief": {
+    "summary": "You ran the GitHub Flow loop — short-lived branch, merge into main, delete the branch — leaving main up to date and no stale branches behind.",
+    "internals": [
+      "A branch is just a movable pointer; `git branch -d` removes the pointer once its commits are reachable from main, so nothing is lost.",
+      "Lowercase `-d` refuses to delete an unmerged branch (use `-D` to force); it's a guard against dropping unmerged work.",
+      "In GitHub Flow the merge usually happens via a pull request on the host; locally, `git merge` is the same move.",
+      "Trunk-based development would instead keep the change as small commits on main, gated by a feature flag — fewer branches, more flags."
+    ],
+    "keyCommands": [
+      { "command": "git switch -c <branch>", "note": "Start a short-lived branch for one change." },
+      { "command": "git merge <branch>", "note": "Bring it into main (via PR on a real host)." },
+      { "command": "git branch -d <branch>", "note": "Delete the merged branch to keep things tidy." }
+    ],
+    "commonMistakes": [
+      "Letting feature branches live for weeks — they drift from main and are painful to merge.",
+      "Leaving merged branches around until nobody remembers what they were.",
+      "Forcing `-D` on a branch that wasn't actually merged, losing its commits."
+    ],
+    "atWork": "Most teams run some flavour of GitHub Flow: branch, PR, merge, delete, deploy. Trunk-based is common at larger scale with strong CI and feature flags. Either way, keep main releasable and branches short-lived.",
+    "interview": "\"Trunk-based vs GitHub Flow?\" Answer: trunk-based commits small changes straight to main behind flags with few branches; GitHub Flow uses short-lived branches merged via PRs. Both keep main releasable."
+  },
+  "solution": [
+    "git switch -c feat/receipts",
+    "echo \"module.exports = { receipt: (inv) => inv.id }\" > src/receipts.js",
+    "git add src/receipts.js",
+    "git commit -m \"feat: add receipt helper\"",
+    "git switch main",
+    "git merge feat/receipts",
+    "git branch -d feat/receipts"
+  ]
+}

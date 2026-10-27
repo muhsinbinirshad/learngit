@@ -161,7 +161,8 @@
       { "type": "lab", "id": "t6-hotfix" },
       { "type": "lab", "id": "t6-release" },
       { "type": "lab", "id": "t6-branch-protection" },
-      { "type": "lab", "id": "t6-codeowners" }
+      { "type": "lab", "id": "t6-codeowners" },
+      { "type": "lab", "id": "t6-trunk-vs-flow" }
     ]
   },
   {
